@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api")
@@ -49,6 +51,9 @@ public class MeController {
         if (uid == null) return ApiResponse.err(401, "未登录");
         String nick = (String) (body.getOrDefault("nickname", body.get("nick")));
         String avatar = (String) body.get("avatar");
+        if (nick != null && userService.nickExistsForOther(nick, uid)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "昵称已被占用");
+        }
         UserPO u = userService.updateProfile(uid, nick, avatar);
         return ApiResponse.ok(Map.of(
                 "id", u.getId(),

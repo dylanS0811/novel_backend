@@ -16,4 +16,6 @@ public interface BookJpa extends JpaRepository<BookPO, Long>, JpaSpecificationEx
     @EntityGraph(attributePaths = "tags")
     @Query("select b from BookPO b where b.id = :id")
     Optional<BookPO> findByIdWithTags(@Param("id") Long id);
+
+    boolean existsByTitleAndAuthor(String title, String author);
 }

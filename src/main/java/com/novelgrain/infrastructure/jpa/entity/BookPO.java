@@ -16,6 +16,7 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "book") // ← 这里改回 book
+@Table(name = "book", uniqueConstraints = @UniqueConstraint(columnNames = {"title", "author"})) // ← 这里改回 book
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

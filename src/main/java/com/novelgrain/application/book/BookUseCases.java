@@ -90,4 +90,8 @@ public class BookUseCases {
     public List<Long> listBookmarkedBookIds(Long userId) {
         return bookmarkJpa.findBookIdsByUserId(userId);
     }
+
+    public boolean exists(String title, String author) {
+        return bookRepo.existsByTitleAndAuthor(title, author);
+    }
 }

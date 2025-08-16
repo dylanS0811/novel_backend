@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/books")
@@ -42,6 +44,12 @@ public class BookController {
         return ApiResponse.ok(use.list(tab, category, orientation, search, tag, page, size));
     }
 
+    @GetMapping("/check")
+    public ApiResponse<Object> check(@RequestParam String title, @RequestParam String author) {
+        boolean exists = use.exists(title, author);
+        return ApiResponse.ok(java.util.Map.of("exists", exists));
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<Book> detail(@PathVariable("id") Long id) {
         return ApiResponse.ok(use.detail(id));
@@ -49,6 +57,9 @@ public class BookController {
 
     @PostMapping
     public ApiResponse<Book> create(@RequestBody CreateReq req) {
+        if (use.exists(req.getTitle(), req.getAuthor())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "书名与作者已存在");
+        }
         var b = use.create(
                 req.getTitle(), req.getAuthor(), req.getOrientation(),
                 req.getCategory(), req.getBlurb(), req.getSummary(),
