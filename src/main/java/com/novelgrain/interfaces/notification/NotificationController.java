@@ -21,8 +21,11 @@ public class NotificationController {
     private final NotificationUseCases use;
 
     @GetMapping
-    public ApiResponse<PageResponse<NotificationItem>> list(@RequestParam Long userId, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
-        return ApiResponse.ok(use.page(userId, page, size));
+    public ApiResponse<PageResponse<NotificationItem>> list(@RequestParam Long userId,
+                                                            @RequestParam(required = false) String type,
+                                                            @RequestParam(defaultValue = "1") int page,
+                                                            @RequestParam(defaultValue = "20") int size) {
+        return ApiResponse.ok(use.page(userId, type, page, size));
     }
 
     @PostMapping("/read-all")
@@ -35,5 +38,11 @@ public class NotificationController {
     public ApiResponse<Object> readOne(@PathVariable Long id, @RequestParam Long userId) {
         use.markRead(userId, id);
         return ApiResponse.ok(null);
+    }
+
+    @GetMapping("/unread-count")
+    public ApiResponse<Object> unreadCount(@RequestParam Long userId) {
+        long c = use.unread(userId);
+        return ApiResponse.ok(java.util.Map.of("unreadCount", c));
     }
 }

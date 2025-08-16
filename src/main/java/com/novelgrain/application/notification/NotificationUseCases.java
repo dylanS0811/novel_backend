@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 public class NotificationUseCases {
     private final NotificationRepository repo;
 
-    public PageResponse<NotificationItem> page(Long userId, int page, int size) {
-        Page<NotificationItem> p = repo.page(userId, page, size);
+    public PageResponse<NotificationItem> page(Long userId, String type, int page, int size) {
+        Page<NotificationItem> p = repo.page(userId, type, page, size);
         return new PageResponse<>(p.getContent(), page, size, p.getTotalElements());
     }
 
