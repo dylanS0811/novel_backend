@@ -82,7 +82,18 @@ paths:
     post: { summary: 全部已读, parameters: [ { in: query, name: userId, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
   /notifications/{id}/read:
     post: { summary: 单条已读, parameters: [ { in: path, name: id, required: true, schema: { type: integer } }, { in: query, name: userId, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
-
+  /users/{userId}/sheets:
+    get: { summary: 用户书单列表, parameters: [ { in: path, name: userId, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
+    post: { summary: 新建书单, parameters: [ { in: path, name: userId, required: true, schema: { type: integer } } ], requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/SheetCreate' } } } }, responses: { '200': { description: OK } } }
+  /sheets/{id}:
+    patch: { summary: 重命名书单, parameters: [ { in: path, name: id, required: true, schema: { type: integer } } ], requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/SheetRename' } } } }, responses: { '200': { description: OK } } }
+    delete: { summary: 删除书单, parameters: [ { in: path, name: id, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
+  /sheets/{id}/books:
+    get: { summary: 书单里的书, parameters: [ { in: path, name: id, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
+    post: { summary: 添加书到书单, parameters: [ { in: path, name: id, required: true, schema: { type: integer } } ], requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/SheetBookCreate' } } } }, responses: { '200': { description: OK } } }
+  /sheets/{id}/books/{bookId}:
+    patch: { summary: 更新书单里书, parameters: [ { in: path, name: id, required: true, schema: { type: integer } }, { in: path, name: bookId, required: true, schema: { type: integer } } ], requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/SheetBookUpdate' } } } }, responses: { '200': { description: OK } } }
+    delete: { summary: 移除书单里的书, parameters: [ { in: path, name: id, required: true, schema: { type: integer } }, { in: path, name: bookId, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
 components:
   schemas:
     BookCreate:
@@ -136,3 +147,34 @@ components:
       type: object
       required: [ name ]
       properties: { name: { type: string } }
+    SheetCreate:
+      type: object
+      required: [ name ]
+      properties:
+        name: { type: string }
+    SheetRename:
+      type: object
+      required: [ name ]
+      properties:
+        name: { type: string }
+    SheetBookCreate:
+      type: object
+      required: [ title ]
+      properties:
+        bookId: { type: integer, nullable: true }
+        title: { type: string }
+        author: { type: string }
+        orientation: { type: string }
+        category: { type: string }
+        rating: { type: integer, nullable: true }
+        review: { type: string, nullable: true }
+    SheetBookUpdate:
+      type: object
+      properties:
+        bookId: { type: integer, nullable: true }
+        title: { type: string }
+        author: { type: string }
+        orientation: { type: string }
+        category: { type: string }
+        rating: { type: integer, nullable: true }
+        review: { type: string, nullable: true }
