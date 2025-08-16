@@ -2,7 +2,7 @@ package com.novelgrain.interfaces.comment;
 
 import com.novelgrain.application.book.BookUseCases;
 import com.novelgrain.domain.book.Comment;
-import com.novelgrain.interfaces.ApiResponse;
+import com.novelgrain.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
