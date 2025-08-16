@@ -5,9 +5,9 @@ import java.util.List;
 public interface BookListRepository {
     List<BookList> listByUser(Long userId);
 
-    BookList create(Long userId, String name);
+    BookList create(Long userId, String name, String intro);
 
-    BookList rename(Long id, String name);
+    BookList update(Long id, String name, String intro);
 
     void delete(Long id);
 
@@ -18,4 +18,6 @@ public interface BookListRepository {
     BookListBook updateBook(Long listId, Long bookId, BookListBook patch);
 
     void deleteBook(Long listId, Long bookId);
+
+    void moveBook(Long fromListId, Long bookId, Long toListId);
 }

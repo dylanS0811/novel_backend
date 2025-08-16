@@ -16,12 +16,12 @@ public class BookListUseCases {
         return repo.listByUser(userId);
     }
 
-    public BookList create(Long userId, String name) {
-        return repo.create(userId, name);
+    public BookList create(Long userId, String name, String intro) {
+        return repo.create(userId, name, intro);
     }
 
-    public BookList rename(Long id, String name) {
-        return repo.rename(id, name);
+    public BookList update(Long id, String name, String intro) {
+        return repo.update(id, name, intro);
     }
 
     public void delete(Long id) {
@@ -42,5 +42,9 @@ public class BookListUseCases {
 
     public void deleteBook(Long listId, Long bookId) {
         repo.deleteBook(listId, bookId);
+    }
+
+    public void moveBook(Long fromListId, Long bookId, Long toListId) {
+        repo.moveBook(fromListId, bookId, toListId);
     }
 }

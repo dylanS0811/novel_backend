@@ -32,8 +32,8 @@ public class BookUseCases {
         return bookRepo.findById(id);
     }
 
-    public Book create(String title, String author, String orientation, String category, String blurb, String summary, java.util.List<String> tags, String coverUrl, Long recommenderId) {
-        Book b = Book.builder().title(title).author(author).orientation(orientation).category(category).blurb(blurb).summary(summary).coverUrl(coverUrl).tags(tags).build();
+    public Book create(String title, String author, String orientation, String category, String blurb, String summary, java.util.List<String> tags, Long recommenderId) {
+        Book b = Book.builder().title(title).author(author).orientation(orientation).category(category).blurb(blurb).summary(summary).tags(tags).build();
         return bookRepo.save(b, recommenderId);
     }
 

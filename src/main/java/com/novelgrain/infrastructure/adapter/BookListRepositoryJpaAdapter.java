@@ -30,18 +30,19 @@ public class BookListRepositoryJpaAdapter implements BookListRepository {
 
     @Transactional
     @Override
-    public BookList create(Long userId, String name) {
+    public BookList create(Long userId, String name, String intro) {
         var user = userJpa.findById(userId).orElseThrow();
-        var po = BookListPO.builder().user(user).name(name).build();
+        var po = BookListPO.builder().user(user).name(name).intro(intro).build();
         po = listJpa.save(po);
         return toDomain(po);
     }
 
     @Transactional
     @Override
-    public BookList rename(Long id, String name) {
+    public BookList update(Long id, String name, String intro) {
         var po = listJpa.findById(id).orElseThrow();
-        po.setName(name);
+        if (name != null) po.setName(name);
+        if (intro != null) po.setIntro(intro);
         po = listJpa.save(po);
         return toDomain(po);
     }
@@ -97,11 +98,35 @@ public class BookListRepositoryJpaAdapter implements BookListRepository {
         bookJpa.deleteById(bookId);
     }
 
+    @Transactional
+    @Override
+    public void moveBook(Long fromListId, Long bookId, Long toListId) {
+        if (fromListId.equals(toListId)) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "same list");
+        }
+        var entry = bookJpa.findById(bookId)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND));
+        if (!entry.getBookList().getId().equals(fromListId)) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND);
+        }
+        var target = listJpa.findById(toListId)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND));
+        if (!entry.getBookList().getUser().getId().equals(target.getUser().getId())) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN);
+        }
+        if (bookJpa.existsByBookList_IdAndBookId(toListId, entry.getBookId())) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.CONFLICT);
+        }
+        entry.setBookList(target);
+        bookJpa.save(entry);
+    }
+
     private BookList toDomain(BookListPO po) {
         return BookList.builder()
                 .id(po.getId())
                 .userId(po.getUser().getId())
                 .name(po.getName())
+                .intro(po.getIntro())
                 .createdAt(po.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant())
                 .updatedAt(po.getUpdatedAt().atZone(ZoneId.systemDefault()).toInstant())
                 .build();

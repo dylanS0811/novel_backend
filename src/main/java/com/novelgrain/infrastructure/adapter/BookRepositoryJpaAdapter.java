@@ -102,7 +102,7 @@ public class BookRepositoryJpaAdapter implements BookRepository {
         var user = userJpa.findById(recommenderId).orElseThrow();
         BookPO po = BookPO.builder()
                 .title(b.getTitle()).author(b.getAuthor()).orientation(b.getOrientation()).category(b.getCategory())
-                .blurb(b.getBlurb()).summary(b.getSummary()).coverUrl(b.getCoverUrl())
+                .blurb(b.getBlurb()).summary(b.getSummary())
                 .recommender(user).likesCount(0).bookmarksCount(0).commentsCount(0)
                 .createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build();
 
@@ -127,7 +127,6 @@ public class BookRepositoryJpaAdapter implements BookRepository {
         if (patch.getCategory() != null) po.setCategory(patch.getCategory());
         if (patch.getBlurb() != null) po.setBlurb(patch.getBlurb());
         if (patch.getSummary() != null) po.setSummary(patch.getSummary());
-        if (patch.getCoverUrl() != null) po.setCoverUrl(patch.getCoverUrl());
         if (patch.getTags() != null) {
             var set = patch.getTags().stream()
                     .map(t -> tagJpa.findByName(t)

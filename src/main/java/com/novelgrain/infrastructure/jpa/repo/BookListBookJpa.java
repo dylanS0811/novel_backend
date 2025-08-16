@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BookListBookJpa extends JpaRepository<BookListBookPO, Long> {
     List<BookListBookPO> findByBookList_Id(Long bookListId);
+
+    boolean existsByBookList_IdAndBookId(Long bookListId, Long bookId);
 }

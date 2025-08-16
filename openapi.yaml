@@ -86,7 +86,7 @@ paths:
     get: { summary: 用户书单列表, parameters: [ { in: path, name: userId, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
     post: { summary: 新建书单, parameters: [ { in: path, name: userId, required: true, schema: { type: integer } } ], requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/SheetCreate' } } } }, responses: { '200': { description: OK } } }
   /sheets/{id}:
-    patch: { summary: 重命名书单, parameters: [ { in: path, name: id, required: true, schema: { type: integer } } ], requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/SheetRename' } } } }, responses: { '200': { description: OK } } }
+    patch: { summary: 更新书单, parameters: [ { in: path, name: id, required: true, schema: { type: integer } } ], requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/SheetUpdate' } } } }, responses: { '200': { description: OK } } }
     delete: { summary: 删除书单, parameters: [ { in: path, name: id, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
   /sheets/{id}/books:
     get: { summary: 书单里的书, parameters: [ { in: path, name: id, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
@@ -94,6 +94,8 @@ paths:
   /sheets/{id}/books/{bookId}:
     patch: { summary: 更新书单里书, parameters: [ { in: path, name: id, required: true, schema: { type: integer } }, { in: path, name: bookId, required: true, schema: { type: integer } } ], requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/SheetBookUpdate' } } } }, responses: { '200': { description: OK } } }
     delete: { summary: 移除书单里的书, parameters: [ { in: path, name: id, required: true, schema: { type: integer } }, { in: path, name: bookId, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
+  /sheets/{fromListId}/books/{bookId}/move:
+    post: { summary: 书单间移动书籍, parameters: [ { in: path, name: fromListId, required: true, schema: { type: integer } }, { in: path, name: bookId, required: true, schema: { type: integer } } ], requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/SheetMove' } } } }, responses: { '200': { description: OK } } }
 components:
   schemas:
     BookCreate:
@@ -107,7 +109,6 @@ components:
         blurb: { type: string }
         summary: { type: string }
         tags: { type: array, items: { type: string } }
-        coverUrl: { type: string }
         recommenderId: { type: integer }
     BookUpdate:
       type: object
@@ -118,7 +119,6 @@ components:
         category: { type: string }
         blurb: { type: string }
         summary: { type: string }
-        coverUrl: { type: string }
         tags: { type: array, items: { type: string } }
     CommentCreate:
       type: object
@@ -152,11 +152,12 @@ components:
       required: [ name ]
       properties:
         name: { type: string }
-    SheetRename:
+        intro: { type: string }
+    SheetUpdate:
       type: object
-      required: [ name ]
       properties:
         name: { type: string }
+        intro: { type: string }
     SheetBookCreate:
       type: object
       required: [ title ]
@@ -178,3 +179,8 @@ components:
         category: { type: string }
         rating: { type: integer, nullable: true }
         review: { type: string, nullable: true }
+    SheetMove:
+      type: object
+      required: [ toListId ]
+      properties:
+        toListId: { type: integer }

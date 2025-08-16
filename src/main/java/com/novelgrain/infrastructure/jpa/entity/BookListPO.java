@@ -24,6 +24,10 @@ public class BookListPO {
     @Column(nullable = false, length = 100)
     private String name;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String intro;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
