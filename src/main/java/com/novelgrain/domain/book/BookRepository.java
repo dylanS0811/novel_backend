@@ -23,5 +23,11 @@ public interface BookRepository {
 
     Comment addComment(Long bookId, Long userId, String text, Long parentId);
 
-    Page<Comment> comments(Long bookId, int page, int size);
+    Page<Comment> comments(Long bookId, Long userId, int page, int size);
+
+    Comment likeComment(Long commentId, Long userId);
+
+    Comment unlikeComment(Long commentId, Long userId);
+
+    Comment findComment(Long commentId, Long userId);
 }

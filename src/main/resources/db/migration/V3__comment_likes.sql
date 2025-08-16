@@ -1,0 +1,12 @@
+ALTER TABLE comment
+    ADD COLUMN likes_count INT NOT NULL DEFAULT 0,
+    ADD COLUMN replies_count INT NOT NULL DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS comment_like (
+    comment_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(comment_id, user_id),
+    FOREIGN KEY(comment_id) REFERENCES comment(id) ON DELETE CASCADE,
+    FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

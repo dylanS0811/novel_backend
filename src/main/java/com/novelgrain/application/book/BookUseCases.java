@@ -61,13 +61,25 @@ public class BookUseCases {
         bookRepo.unbookmark(id, userId);
     }
 
-    public PageResponse<Comment> comments(Long id, int page, int size) {
-        var p = bookRepo.comments(id, page, size);
+    public PageResponse<Comment> comments(Long id, Long userId, int page, int size) {
+        var p = bookRepo.comments(id, userId, page, size);
         return new PageResponse<>(p.getContent(), page, size, p.getTotalElements());
     }
 
     public Comment addComment(Long id, Long userId, String text, Long parentId) {
         return bookRepo.addComment(id, userId, text, parentId);
+    }
+
+    public Comment likeComment(Long commentId, Long userId) {
+        return bookRepo.likeComment(commentId, userId);
+    }
+
+    public Comment unlikeComment(Long commentId, Long userId) {
+        return bookRepo.unlikeComment(commentId, userId);
+    }
+
+    public Comment findComment(Long commentId, Long userId) {
+        return bookRepo.findComment(commentId, userId);
     }
 
     /* ===== 初始化高亮：我点赞过/收藏过的书 ID 列表 ===== */
