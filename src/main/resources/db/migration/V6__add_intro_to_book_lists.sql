@@ -1,0 +1,1 @@
+ALTER TABLE book_lists ADD COLUMN IF NOT EXISTS intro TEXT;
