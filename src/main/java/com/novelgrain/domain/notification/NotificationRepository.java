@@ -10,4 +10,8 @@ public interface NotificationRepository {
     void markRead(Long userId, Long id);
 
     long unreadCount(Long userId);
+
+    boolean exists(String type, Long receiverId, Long actorId, Long bookId, Long commentId);
+
+    void save(String type, Long receiverId, Long actorId, Long bookId, Long commentId, String title, String content);
 }
