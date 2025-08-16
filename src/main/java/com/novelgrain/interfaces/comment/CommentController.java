@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/api/comments")
 @RequiredArgsConstructor
 public class CommentController {
     private final BookUseCases use;
