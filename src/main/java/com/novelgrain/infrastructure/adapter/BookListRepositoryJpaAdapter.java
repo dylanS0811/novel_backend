@@ -63,6 +63,15 @@ public class BookListRepositoryJpaAdapter implements BookListRepository {
     @Override
     public BookListBook addBook(Long listId, BookListBook book) {
         var list = listJpa.findById(listId).orElseThrow();
+        if (bookJpa.existsByBookListIdAndTitleAndAuthorAndOrientationAndCategory(
+                listId,
+                coalesce(book.getTitle()),
+                coalesce(book.getAuthor()),
+                coalesce(book.getOrientation()),
+                coalesce(book.getCategory()))) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.CONFLICT);
+        }
         var po = BookListBookPO.builder()
                 .bookList(list)
                 .bookId(book.getBookId())
@@ -114,11 +123,21 @@ public class BookListRepositoryJpaAdapter implements BookListRepository {
         if (!entry.getBookList().getUser().getId().equals(target.getUser().getId())) {
             throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN);
         }
-        if (bookJpa.existsByBookList_IdAndBookId(toListId, entry.getBookId())) {
-            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.CONFLICT);
+        if (bookJpa.existsByBookListIdAndTitleAndAuthorAndOrientationAndCategory(
+                toListId,
+                coalesce(entry.getTitle()),
+                coalesce(entry.getAuthor()),
+                coalesce(entry.getOrientation()),
+                coalesce(entry.getCategory()))) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.CONFLICT);
         }
         entry.setBookList(target);
         bookJpa.save(entry);
+    }
+
+    private String coalesce(String s) {
+        return s == null ? "" : s;
     }
 
     private BookList toDomain(BookListPO po) {
