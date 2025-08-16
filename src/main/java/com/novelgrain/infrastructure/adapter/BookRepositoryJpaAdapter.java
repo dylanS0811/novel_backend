@@ -7,15 +7,18 @@ import com.novelgrain.infrastructure.jpa.entity.BookBookmarkPO;
 import com.novelgrain.infrastructure.jpa.entity.BookLikePO;
 import com.novelgrain.infrastructure.jpa.entity.BookPO;
 import com.novelgrain.infrastructure.jpa.entity.CommentPO;
+import com.novelgrain.infrastructure.jpa.entity.CommentLikePO;
 import com.novelgrain.infrastructure.jpa.entity.TagPO;
 import com.novelgrain.infrastructure.jpa.repo.BookBookmarkJpa;
 import com.novelgrain.infrastructure.jpa.repo.BookJpa;
 import com.novelgrain.infrastructure.jpa.repo.BookLikeJpa;
 import com.novelgrain.infrastructure.jpa.repo.CommentJpa;
+import com.novelgrain.infrastructure.jpa.repo.CommentLikeJpa;
 import com.novelgrain.infrastructure.jpa.repo.TagJpa;
 import com.novelgrain.infrastructure.jpa.repo.UserJpa;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -43,6 +46,8 @@ public class BookRepositoryJpaAdapter implements BookRepository {
     private final UserJpa userJpa;
 
     private final CommentJpa commentJpa;
+
+    private final CommentLikeJpa commentLikeJpa;
 
     private final BookLikeJpa likeJpa;
 
@@ -190,30 +195,79 @@ public class BookRepositoryJpaAdapter implements BookRepository {
         var book = bookJpa.findById(bookId).orElseThrow();
         var user = userJpa.findById(userId).orElseThrow();
         CommentPO parent = null;
-        if (parentId != null) parent = commentJpa.findById(parentId).orElseThrow();
+        if (parentId != null) {
+            parent = commentJpa.findById(parentId).orElseThrow();
+            parent.setRepliesCount(parent.getRepliesCount() + 1);
+            commentJpa.save(parent);
+        }
         var c = commentJpa.save(CommentPO.builder()
-                .book(book).user(user).content(text).parent(parent).createdAt(LocalDateTime.now()).build());
+                .book(book)
+                .user(user)
+                .content(text)
+                .parent(parent)
+                .likesCount(0)
+                .repliesCount(0)
+                .createdAt(LocalDateTime.now()).build());
         book.setCommentsCount(book.getCommentsCount() + 1);
         bookJpa.save(book);
 
-        return Comment.builder()
-                .id(c.getId())
-                .userId(user.getId()).userName(user.getNick()).userAvatar(user.getAvatar())
-                .text(text)
-                .createdAt(c.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
-                .build();
+        return toDomainComment(c, userId);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<Comment> comments(Long bookId, int page, int size) {
-        var p = commentJpa.findByBookIdOrderByCreatedAtDesc(bookId, PageRequest.of(page - 1, size));
-        return p.map(c -> Comment.builder()
-                .id(c.getId())
-                .userId(c.getUser().getId()).userName(c.getUser().getNick()).userAvatar(c.getUser().getAvatar())
-                .text(c.getContent())
-                .createdAt(c.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
-                .build());
+    public Page<Comment> comments(Long bookId, Long userId, int page, int size) {
+        var p = commentJpa.findByBook_IdAndParentIsNullOrderByCreatedAtDesc(bookId, PageRequest.of(page - 1, size));
+        return p.map(c -> toDomainComment(c, userId));
+    }
+
+    @Transactional
+    @Override
+    public Comment likeComment(Long commentId, Long userId) {
+        var comment = commentJpa.findById(commentId).orElseThrow();
+        var user = userJpa.findById(userId).orElseThrow();
+        if (!commentLikeJpa.existsByComment_IdAndUser_Id(commentId, userId)) {
+            commentLikeJpa.save(CommentLikePO.builder().comment(comment).user(user).createdAt(LocalDateTime.now()).build());
+            comment.setLikesCount(comment.getLikesCount() + 1);
+            commentJpa.save(comment);
+        }
+        return toDomainComment(comment, userId);
+    }
+
+    @Transactional
+    @Override
+    public Comment unlikeComment(Long commentId, Long userId) {
+        var comment = commentJpa.findById(commentId).orElseThrow();
+        if (commentLikeJpa.existsByComment_IdAndUser_Id(commentId, userId)) {
+            commentLikeJpa.deleteByComment_IdAndUser_Id(commentId, userId);
+            comment.setLikesCount(Math.max(0, comment.getLikesCount() - 1));
+            commentJpa.save(comment);
+        }
+        return toDomainComment(comment, userId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Comment findComment(Long commentId, Long userId) {
+        var c = commentJpa.findById(commentId).orElseThrow();
+        return toDomainComment(c, userId);
+    }
+
+    private Comment toDomainComment(CommentPO po, Long userId) {
+        boolean liked = userId != null && commentLikeJpa.existsByComment_IdAndUser_Id(po.getId(), userId);
+        List<Comment> replies = commentJpa.findByParent_IdOrderByCreatedAtAsc(po.getId()).stream()
+                .map(r -> toDomainComment(r, userId)).collect(Collectors.toList());
+        return Comment.builder()
+                .id(po.getId())
+                .userId(po.getUser().getId()).userName(po.getUser().getNick()).userAvatar(po.getUser().getAvatar())
+                .text(po.getContent())
+                .parentId(po.getParent() != null ? po.getParent().getId() : null)
+                .likes(po.getLikesCount())
+                .liked(liked)
+                .repliesCount(po.getRepliesCount())
+                .replies(replies)
+                .createdAt(po.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
+                .build();
     }
 
     private Book toDomain(BookPO po) {

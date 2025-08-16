@@ -1,6 +1,7 @@
 package com.novelgrain.domain.book;
 
 import java.time.Instant;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,16 @@ public class Comment {
     private String userAvatar;
 
     private String text;
+
+    private Long parentId;
+
+    private int likes;
+
+    private boolean liked;
+
+    private int repliesCount;
+
+    private List<Comment> replies;
 
     private Instant createdAt;
 }

@@ -43,6 +43,12 @@ public class CommentPO {
     @JoinColumn(name = "parent_id")
     private CommentPO parent;
 
+    @Column(name = "likes_count")
+    private int likesCount;
+
+    @Column(name = "replies_count")
+    private int repliesCount;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

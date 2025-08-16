@@ -102,10 +102,11 @@ public class BookController {
     @GetMapping("/{id}/comments")
     public ApiResponse<PageResponse<Comment>> comments(
             @PathVariable("id") Long id,
+            @RequestParam("userId") Long userId,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
-        return ApiResponse.ok(use.comments(id, page, size));
+        return ApiResponse.ok(use.comments(id, userId, page, size));
     }
 
     @PostMapping("/{id}/comments")

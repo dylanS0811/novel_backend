@@ -6,6 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface CommentJpa extends JpaRepository<CommentPO, Long> {
-    Page<CommentPO> findByBookIdOrderByCreatedAtDesc(Long bookId, Pageable pageable);
+    Page<CommentPO> findByBook_IdAndParentIsNullOrderByCreatedAtDesc(Long bookId, Pageable pageable);
+
+    List<CommentPO> findByParent_IdOrderByCreatedAtAsc(Long parentId);
 }
