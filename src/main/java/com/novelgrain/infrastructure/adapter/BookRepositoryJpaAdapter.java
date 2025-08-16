@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,7 +82,8 @@ public class BookRepositoryJpaAdapter implements BookRepository {
         };
 
         Sort sort = "hot".equalsIgnoreCase(tab)
-                ? Sort.by(Sort.Order.desc("likesCount"), Sort.Order.desc("createdAt"))
+                ? JpaSort.unsafe(Sort.Direction.DESC, "(comments_count * 1 + bookmarks_count * 2 + likes_count * 3)")
+                        .and(Sort.by(Sort.Order.desc("createdAt")))
                 : Sort.by(Sort.Order.desc("createdAt"));
 
         var p = bookJpa.findAll(spec, PageRequest.of(page - 1, size, sort));
@@ -251,6 +253,12 @@ public class BookRepositoryJpaAdapter implements BookRepository {
     public Comment findComment(Long commentId, Long userId) {
         var c = commentJpa.findById(commentId).orElseThrow();
         return toDomainComment(c, userId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public boolean existsByTitleAndAuthor(String title, String author) {
+        return bookJpa.existsByTitleAndAuthor(title, author);
     }
 
     private Comment toDomainComment(CommentPO po, Long userId) {

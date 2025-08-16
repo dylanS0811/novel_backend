@@ -49,4 +49,12 @@ public class UserService {
             return userJpa.save(u);
         });
     }
+
+    public boolean nickExists(String nick) {
+        return userJpa.existsByNick(nick);
+    }
+
+    public boolean nickExistsForOther(String nick, Long userId) {
+        return userJpa.findByNick(nick).map(u -> !u.getId().equals(userId)).orElse(false);
+    }
 }

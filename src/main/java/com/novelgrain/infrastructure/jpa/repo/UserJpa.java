@@ -10,4 +10,8 @@ public interface UserJpa extends JpaRepository<UserPO, Long> {
     Optional<UserPO> findByPhone(String phone);
 
     Optional<UserPO> findByWechatOpenid(String openid);
+
+    Optional<UserPO> findByNick(String nick);
+
+    boolean existsByNick(String nick);
 }

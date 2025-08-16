@@ -9,11 +9,13 @@ paths:
   /me:
     get: { summary: 当前用户, responses: { '200': { description: OK } } }
     patch: { summary: 更新当前用户, responses: { '200': { description: OK } } }
+  /users/check-nickname:
+    get: { summary: 校验昵称是否被占用, parameters: [ { in: query, name: nickname, required: true, schema: { type: string } } ], responses: { '200': { description: OK } } }
   /books:
     get:
       summary: 列表
       parameters:
-        - { in: query, name: tab, schema: { type: string, enum: [ hot, new ] } }
+        - { in: query, name: tab, schema: { type: string, enum: [ hot, new ] }, description: 热度=评论×1+收藏×2+点赞×3 }
         - { in: query, name: category, schema: { type: string } }
         - { in: query, name: orientation, schema: { type: string } }
         - { in: query, name: search, schema: { type: string } }
@@ -24,6 +26,13 @@ paths:
     post:
       summary: 新增
       requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/BookCreate' } } } }
+      responses: { '200': { description: OK } }
+  /books/check:
+    get:
+      summary: 校验书名作者唯一性
+      parameters:
+        - { in: query, name: title, required: true, schema: { type: string } }
+        - { in: query, name: author, required: true, schema: { type: string } }
       responses: { '200': { description: OK } }
   /books/{id}:
     get: { summary: 详情, parameters: [ { in: path, name: id, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
@@ -66,7 +75,7 @@ paths:
   /tags:
     post: { summary: 创建标签, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/TagCreate' } } } }, responses: { '200': { description: OK } } }
   /leaderboard:
-    get: { summary: 排行榜, parameters: [ { in: query, name: type, schema: { type: string, enum: [ champion, rookie ] } }, { in: query, name: limit, schema: { type: integer, default: 10 } } ], responses: { '200': { description: OK } } }
+    get: { summary: 排行榜（热度=评论×1+收藏×2+点赞×3）, parameters: [ { in: query, name: type, schema: { type: string, enum: [ champion, rookie ] } }, { in: query, name: limit, schema: { type: integer, default: 10 } } ], responses: { '200': { description: OK } } }
   /notifications:
     get: { summary: 通知列表, parameters: [ { in: query, name: userId, required: true, schema: { type: integer } }, { in: query, name: page, schema: { type: integer, default: 1 } }, { in: query, name: size, schema: { type: integer, default: 20 } } ], responses: { '200': { description: OK } } }
   /notifications/read-all:

@@ -30,4 +30,6 @@ public interface BookRepository {
     Comment unlikeComment(Long commentId, Long userId);
 
     Comment findComment(Long commentId, Long userId);
+
+    boolean existsByTitleAndAuthor(String title, String author);
 }

@@ -13,6 +13,7 @@
 - OpenAPI 契约：`openapi.yaml`
 - 统一响应：`{ code, message, data }`
 - 完整接口：鉴权/用户、书目、标签、评论、点赞收藏、排行榜、通知
+- 热度算法：评论×1、收藏×2、点赞×3
 - 支持 `PATCH /books/{id}`、`DELETE /books/{id}`
 
 ## 启动

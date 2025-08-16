@@ -32,7 +32,7 @@ public class UserPO {
     @Column(name = "wechat_openid", length = 64, unique = true)
     private String wechatOpenid;
 
-    @Column(length = 50)
+    @Column(length = 40, unique = true)
     private String nick;
 
     private String avatar;

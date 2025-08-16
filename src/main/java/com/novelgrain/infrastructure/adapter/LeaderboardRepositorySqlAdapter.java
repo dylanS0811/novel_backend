@@ -21,9 +21,9 @@ public class LeaderboardRepositorySqlAdapter implements LeaderboardRepository {
         String timeFilter = "rookie".equalsIgnoreCase(type) ? " AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) " : "";
         String sql = ""
                 + "SELECT u.nick, u.avatar, "
-                + "       (SELECT COUNT(*) FROM book_like l JOIN book b ON b.id=l.book_id WHERE b.recommender_id=u.id " + timeFilter + ") * 1 "
+                + "       (SELECT COUNT(*) FROM comment c JOIN book b ON b.id=c.book_id WHERE b.recommender_id=u.id " + timeFilter + ") * 1 "
                 + "     + (SELECT COUNT(*) FROM book_bookmark bm JOIN book b ON b.id=bm.book_id WHERE b.recommender_id=u.id " + timeFilter + ") * 2 "
-                + "     + (SELECT COUNT(*) FROM comment c JOIN book b ON b.id=c.book_id WHERE b.recommender_id=u.id " + timeFilter + ") * 3 AS score "
+                + "     + (SELECT COUNT(*) FROM book_like l JOIN book b ON b.id=l.book_id WHERE b.recommender_id=u.id " + timeFilter + ") * 3 AS score "
                 + "FROM user u "
                 + "ORDER BY score DESC "
                 + "LIMIT :limit";
