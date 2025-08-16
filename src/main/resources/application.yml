@@ -1,0 +1,25 @@
+spring:
+  application.name: novelgrain-ddd-backend
+  datasource:
+    url: jdbc:mysql://localhost:3306/novelgrain?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8
+    username: root
+    password: 123456
+  jpa:
+    open-in-view: false
+    hibernate.ddl-auto: validate
+    properties:
+      hibernate.format_sql: true
+      hibernate.dialect: org.hibernate.dialect.MySQLDialect
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server.port: 8080
+
+springdoc:
+  api-docs.path: /v3/api-docs
+  swagger-ui.path: /swagger-ui
+
+logging.level:
+  org.springframework: INFO
+  org.hibernate.SQL: INFO
