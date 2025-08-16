@@ -77,11 +77,13 @@ paths:
   /leaderboard:
     get: { summary: 排行榜（热度=评论×1+收藏×2+点赞×3）, parameters: [ { in: query, name: type, schema: { type: string, enum: [ champion, rookie ] } }, { in: query, name: limit, schema: { type: integer, default: 10 } } ], responses: { '200': { description: OK } } }
   /notifications:
-    get: { summary: 通知列表, parameters: [ { in: query, name: userId, required: true, schema: { type: integer } }, { in: query, name: page, schema: { type: integer, default: 1 } }, { in: query, name: size, schema: { type: integer, default: 20 } } ], responses: { '200': { description: OK } } }
+    get: { summary: 通知列表, parameters: [ { in: query, name: userId, required: true, schema: { type: integer } }, { in: query, name: type, schema: { type: string } }, { in: query, name: page, schema: { type: integer, default: 1 } }, { in: query, name: size, schema: { type: integer, default: 20 } } ], responses: { '200': { description: OK } } }
   /notifications/read-all:
     post: { summary: 全部已读, parameters: [ { in: query, name: userId, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
   /notifications/{id}/read:
     post: { summary: 单条已读, parameters: [ { in: path, name: id, required: true, schema: { type: integer } }, { in: query, name: userId, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
+  /notifications/unread-count:
+    get: { summary: 未读通知数量, parameters: [ { in: query, name: userId, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
   /users/{userId}/sheets:
     get: { summary: 用户书单列表, parameters: [ { in: path, name: userId, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
     post: { summary: 新建书单, parameters: [ { in: path, name: userId, required: true, schema: { type: integer } } ], requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/SheetCreate' } } } }, responses: { '200': { description: OK } } }
@@ -184,3 +186,17 @@ components:
       required: [ toListId ]
       properties:
         toListId: { type: integer }
+    Notification:
+      type: object
+      properties:
+        id: { type: integer }
+        type: { type: string }
+        title: { type: string, nullable: true }
+        content: { type: string, nullable: true }
+        actorId: { type: integer, nullable: true }
+        actorName: { type: string, nullable: true }
+        actorAvatar: { type: string, nullable: true }
+        bookId: { type: integer, nullable: true }
+        commentId: { type: integer, nullable: true }
+        read: { type: boolean }
+        createdAt: { type: string, format: date-time }

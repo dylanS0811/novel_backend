@@ -22,11 +22,13 @@ public class NotificationItem {
 
     private Long bookId;
 
-    private Long fromUserId;
+    private Long commentId;
 
-    private String fromUserName;
+    private Long actorId;
 
-    private String fromUserAvatar;
+    private String actorName;
+
+    private String actorAvatar;
 
     private boolean read;
 
