@@ -10,6 +10,7 @@ public class BookList {
     private Long id;
     private Long userId;
     private String name;
+    private String intro;
     private Instant createdAt;
     private Instant updatedAt;
 }

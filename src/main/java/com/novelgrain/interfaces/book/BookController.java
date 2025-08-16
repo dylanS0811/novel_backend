@@ -63,7 +63,7 @@ public class BookController {
         var b = use.create(
                 req.getTitle(), req.getAuthor(), req.getOrientation(),
                 req.getCategory(), req.getBlurb(), req.getSummary(),
-                req.getTags(), req.getCoverUrl(), req.getRecommenderId()
+                req.getTags(), req.getRecommenderId()
         );
         return ApiResponse.ok(b);
     }
@@ -72,7 +72,7 @@ public class BookController {
     public ApiResponse<Book> update(@PathVariable("id") Long id, @RequestBody UpdateReq req) {
         var patch = Book.builder()
                 .title(req.getTitle()).author(req.getAuthor()).orientation(req.getOrientation()).category(req.getCategory())
-                .blurb(req.getBlurb()).summary(req.getSummary()).coverUrl(req.getCoverUrl()).tags(req.getTags()).build();
+                .blurb(req.getBlurb()).summary(req.getSummary()).tags(req.getTags()).build();
         return ApiResponse.ok(use.update(id, patch));
     }
 
@@ -162,8 +162,6 @@ public class BookController {
 
         private java.util.List<String> tags;
 
-        private String coverUrl;
-
         private Long recommenderId;
     }
 
@@ -182,8 +180,6 @@ public class BookController {
         private String summary;
 
         private java.util.List<String> tags;
-
-        private String coverUrl;
     }
 
     @Data

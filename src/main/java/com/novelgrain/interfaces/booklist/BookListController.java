@@ -27,12 +27,12 @@ public class BookListController {
 
     @PostMapping("/api/users/{userId}/sheets")
     public ApiResponse<BookList> create(@PathVariable Long userId, @RequestBody SheetCreateReq req) {
-        return ApiResponse.ok(use.create(userId, req.getName()));
+        return ApiResponse.ok(use.create(userId, req.getName(), req.getIntro()));
     }
 
     @PatchMapping("/api/sheets/{id}")
-    public ApiResponse<BookList> rename(@PathVariable Long id, @RequestBody SheetCreateReq req) {
-        return ApiResponse.ok(use.rename(id, req.getName()));
+    public ApiResponse<BookList> update(@PathVariable Long id, @RequestBody SheetUpdateReq req) {
+        return ApiResponse.ok(use.update(id, req.getName(), req.getIntro()));
     }
 
     @DeleteMapping("/api/sheets/{id}")
@@ -80,9 +80,26 @@ public class BookListController {
         return ApiResponse.ok(null);
     }
 
+    @PostMapping("/api/sheets/{fromListId}/books/{bookId}/move")
+    public ApiResponse<Object> moveBook(@PathVariable("fromListId") Long fromId, @PathVariable("bookId") Long bookId, @RequestBody MoveReq req) {
+        use.moveBook(fromId, bookId, req.getToListId());
+        return ApiResponse.ok(java.util.Map.of(
+                "moved", true,
+                "fromListId", fromId,
+                "toListId", req.getToListId(),
+                "bookId", bookId));
+    }
+
     @Data
     public static class SheetCreateReq {
         private String name;
+        private String intro;
+    }
+
+    @Data
+    public static class SheetUpdateReq {
+        private String name;
+        private String intro;
     }
 
     @Data
@@ -105,5 +122,10 @@ public class BookListController {
         private String category;
         private Integer rating;
         private String review;
+    }
+
+    @Data
+    public static class MoveReq {
+        private Long toListId;
     }
 }
