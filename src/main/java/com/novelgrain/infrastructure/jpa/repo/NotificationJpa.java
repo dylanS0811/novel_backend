@@ -12,4 +12,8 @@ public interface NotificationJpa extends JpaRepository<NotificationPO, Long> {
     Page<NotificationPO> findByUserIdAndTypeOrderByCreatedAtDesc(Long userId, String type, Pageable pageable);
 
     long countByUserIdAndReadFalse(Long userId);
+
+    boolean existsByTypeAndUser_IdAndActor_IdAndBook_IdAndCommentIsNull(String type, Long userId, Long actorId, Long bookId);
+
+    boolean existsByTypeAndUser_IdAndActor_IdAndBook_IdAndComment_Id(String type, Long userId, Long actorId, Long bookId, Long commentId);
 }

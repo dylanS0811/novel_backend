@@ -2,8 +2,14 @@ package com.novelgrain.infrastructure.adapter;
 
 import com.novelgrain.domain.notification.NotificationItem;
 import com.novelgrain.domain.notification.NotificationRepository;
+import com.novelgrain.infrastructure.jpa.entity.BookPO;
+import com.novelgrain.infrastructure.jpa.entity.CommentPO;
 import com.novelgrain.infrastructure.jpa.entity.NotificationPO;
+import com.novelgrain.infrastructure.jpa.entity.UserPO;
+import com.novelgrain.infrastructure.jpa.repo.BookJpa;
+import com.novelgrain.infrastructure.jpa.repo.CommentJpa;
 import com.novelgrain.infrastructure.jpa.repo.NotificationJpa;
+import com.novelgrain.infrastructure.jpa.repo.UserJpa;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +22,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class NotificationRepositoryJpaAdapter implements NotificationRepository {
     private final NotificationJpa notificationJpa;
+    private final UserJpa userJpa;
+    private final BookJpa bookJpa;
+    private final CommentJpa commentJpa;
 
     @Override
     public Page<NotificationItem> page(Long userId, String type, int page, int size) {
@@ -51,6 +60,35 @@ public class NotificationRepositoryJpaAdapter implements NotificationRepository 
     @Override
     public long unreadCount(Long userId) {
         return notificationJpa.countByUserIdAndReadFalse(userId);
+    }
+
+    @Override
+    public boolean exists(String type, Long receiverId, Long actorId, Long bookId, Long commentId) {
+        if (commentId == null) {
+            return notificationJpa.existsByTypeAndUser_IdAndActor_IdAndBook_IdAndCommentIsNull(type, receiverId, actorId, bookId);
+        }
+        return notificationJpa.existsByTypeAndUser_IdAndActor_IdAndBook_IdAndComment_Id(type, receiverId, actorId, bookId, commentId);
+    }
+
+    @Override
+    public void save(String type, Long receiverId, Long actorId, Long bookId, Long commentId, String title, String content) {
+        UserPO receiver = userJpa.findById(receiverId).orElseThrow();
+        UserPO actor = userJpa.findById(actorId).orElseThrow();
+        BookPO book = bookId != null ? bookJpa.findById(bookId).orElse(null) : null;
+        CommentPO comment = commentId != null ? commentJpa.findById(commentId).orElse(null) : null;
+
+        NotificationPO po = NotificationPO.builder()
+                .type(type)
+                .title(title)
+                .content(content)
+                .user(receiver)
+                .actor(actor)
+                .book(book)
+                .comment(comment)
+                .read(false)
+                .createdAt(java.time.LocalDateTime.now())
+                .build();
+        notificationJpa.save(po);
     }
 
     private NotificationItem map(NotificationPO n) {

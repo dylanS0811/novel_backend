@@ -6,6 +6,7 @@ import com.novelgrain.domain.book.BookRepository;
 import com.novelgrain.domain.book.Comment;
 import com.novelgrain.infrastructure.jpa.repo.BookBookmarkJpa;
 import com.novelgrain.infrastructure.jpa.repo.BookLikeJpa;
+import com.novelgrain.application.notification.NotificationService;
 
 import java.util.List;
 
@@ -22,6 +23,8 @@ public class BookUseCases {
     private final BookLikeJpa likeJpa;
 
     private final BookBookmarkJpa bookmarkJpa;
+
+    private final NotificationService notificationService;
 
     public PageResponse<Book> list(String tab, String category, String orientation, String search, String tag, int page, int size) {
         Page<Book> p = bookRepo.page(tab, category, orientation, search, tag, page, size);
@@ -47,6 +50,7 @@ public class BookUseCases {
 
     public void like(Long id, Long userId) {
         bookRepo.like(id, userId);
+        notificationService.onBookLiked(id, userId);
     }
 
     public void unlike(Long id, Long userId) {
@@ -55,6 +59,7 @@ public class BookUseCases {
 
     public void bookmark(Long id, Long userId) {
         bookRepo.bookmark(id, userId);
+        notificationService.onBookBookmarked(id, userId);
     }
 
     public void unbookmark(Long id, Long userId) {
@@ -67,11 +72,18 @@ public class BookUseCases {
     }
 
     public Comment addComment(Long id, Long userId, String text, Long parentId) {
-        return bookRepo.addComment(id, userId, text, parentId);
+        Comment c = bookRepo.addComment(id, userId, text, parentId);
+        notificationService.onBookCommented(id, userId, c.getId(), text);
+        if (parentId != null) {
+            notificationService.onCommentReplied(parentId, userId, c.getId(), text);
+        }
+        return c;
     }
 
     public Comment likeComment(Long commentId, Long userId) {
-        return bookRepo.likeComment(commentId, userId);
+        Comment c = bookRepo.likeComment(commentId, userId);
+        notificationService.onCommentLiked(commentId, userId);
+        return c;
     }
 
     public Comment unlikeComment(Long commentId, Long userId) {
