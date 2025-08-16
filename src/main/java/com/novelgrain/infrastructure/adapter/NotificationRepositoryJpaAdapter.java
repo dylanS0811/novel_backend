@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.util.StringUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class NotificationRepositoryJpaAdapter implements NotificationRepository 
     private final CommentJpa commentJpa;
 
     @Override
+    @Transactional(readOnly = true)
     public Page<NotificationItem> page(Long userId, String type, int page, int size) {
         var pageable = PageRequest.of(page - 1, size);
         Page<NotificationPO> p;
