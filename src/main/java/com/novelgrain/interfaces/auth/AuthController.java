@@ -30,9 +30,9 @@ public class AuthController {
     public ApiResponse<?> register(@RequestBody @Valid CredentialReq req) {
         String handle = req.getHandle();
         String password = req.getPassword();
-        if (!validHandle(handle)) return ApiResponse.error(400, "handle 格式不正确");
+        if (!validHandle(handle)) return ApiResponse.error(400, "用户名 / 邮箱 / 手机号 格式不正确");
         if (password == null || password.length() < 6) return ApiResponse.error(400, "密码至少6位");
-        if (userService.handleExists(handle)) return ApiResponse.error(409, "handle 已存在");
+        if (userService.handleExists(handle)) return ApiResponse.error(409, "用户名 / 邮箱 / 手机号 已存在");
         String hash = encoder.encode(password);
         userService.createUser(handle, hash);
         return ApiResponse.ok(Map.of("ok", true));
@@ -42,7 +42,7 @@ public class AuthController {
     public ApiResponse<?> login(@RequestBody @Valid CredentialReq req) {
         String handle = req.getHandle();
         String password = req.getPassword();
-        if (!validHandle(handle)) return ApiResponse.error(400, "handle 格式不正确");
+        if (!validHandle(handle)) return ApiResponse.error(400, "用户名 / 邮箱 / 手机号 格式不正确");
         if (password == null || password.length() < 6) return ApiResponse.error(400, "密码至少6位");
         UserPO user = userService.findByHandle(handle).orElse(null);
         if (user == null || user.getPasswordHash() == null || !encoder.matches(password, user.getPasswordHash())) {
