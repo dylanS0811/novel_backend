@@ -20,15 +20,34 @@ public class UserService {
         return userJpa.findById(id);
     }
 
+    public Optional<UserPO> findByHandle(String handle) {
+        if (handle.contains("@")) {
+            return userJpa.findByEmail(handle);
+        }
+        if (handle.matches("\\d{7,15}")) {
+            return userJpa.findByPhone(handle);
+        }
+        return userJpa.findByUsername(handle);
+    }
+
+    public boolean handleExists(String handle) {
+        return findByHandle(handle).isPresent();
+    }
+
     @Transactional
-    public UserPO upsertByPhone(String phone) {
-        return userJpa.findByPhone(phone).orElseGet(() -> {
-            UserPO u = new UserPO();
-            u.setPhone(phone);
-            u.setNick("用户" + phone.substring(Math.max(0, phone.length() - 4)));
-            u.setAvatar("https://i.pravatar.cc/80?u=" + phone);
-            return userJpa.save(u);
-        });
+    public UserPO createUser(String handle, String passwordHash) {
+        UserPO u = new UserPO();
+        if (handle.contains("@")) {
+            u.setEmail(handle);
+        } else if (handle.matches("\\d{7,15}")) {
+            u.setPhone(handle);
+        } else {
+            u.setUsername(handle);
+        }
+        u.setPasswordHash(passwordHash);
+        u.setNick(handle);
+        u.setAvatar("https://i.pravatar.cc/80?u=" + handle);
+        return userJpa.save(u);
     }
 
     @Transactional
@@ -37,17 +56,6 @@ public class UserService {
         if (nick != null && !nick.isBlank()) u.setNick(nick);
         if (avatar != null && !avatar.isBlank()) u.setAvatar(avatar);
         return userJpa.save(u);
-    }
-
-    @Transactional
-    public UserPO upsertByWechatOpenid(String openid, String nick, String avatar) {
-        return userJpa.findByWechatOpenid(openid).orElseGet(() -> {
-            UserPO u = new UserPO();
-            u.setWechatOpenid(openid);
-            u.setNick(nick != null ? nick : "微信用户");
-            u.setAvatar(avatar != null ? avatar : "https://i.pravatar.cc/80?img=15");
-            return userJpa.save(u);
-        });
     }
 
     public boolean nickExists(String nick) {

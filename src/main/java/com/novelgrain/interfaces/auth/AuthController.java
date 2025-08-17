@@ -1,58 +1,53 @@
-// src/main/java/com/novelgrain/interfaces/auth/AuthController.java
 package com.novelgrain.interfaces.auth;
 
 import com.novelgrain.application.user.UserService;
 import com.novelgrain.common.ApiResponse;
-
-import com.novelgrain.auth.CodeStore;
-import com.novelgrain.auth.InMemoryCodeStore;
-import com.novelgrain.auth.SmsService;
-import com.novelgrain.auth.impl.MockSmsService;
 import com.novelgrain.infrastructure.jpa.entity.UserPO;
 import com.novelgrain.security.JwtUtil;
+import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.Random;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-
-    // 验证码仍用内存；以后可换 Redis 实现
-    private final CodeStore codeStore = new InMemoryCodeStore();
-    private final SmsService smsService = new MockSmsService();
-    private final Random random = new Random();
-
     private final UserService userService;
+    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    @PostMapping(value="/phone/code",
-            consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<?> sendPhoneCode(@RequestBody PhoneCodeReq req) throws Exception {
-        String phone = req.getPhone();
-        if (phone == null || phone.isBlank()) return ApiResponse.error(400, "手机号不能为空");
-        String code = String.format("%06d", random.nextInt(1000000));
-        codeStore.save("login", phone, code, 300);
-        smsService.sendLoginCode(phone, code);  // 控制台会打印验证码
-        return ApiResponse.ok(Map.of("sent", true, "ttl", 300));
+    private static final Pattern EMAIL = Pattern.compile("^[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}$");
+    private static final Pattern PHONE = Pattern.compile("^\\d{7,15}$");
+    private static final Pattern USERNAME = Pattern.compile("^(?=.{3,20}$)(?!.*[._-]{2})[A-Za-z0-9]+(?:[._-][A-Za-z0-9]+)*$");
+
+    @PostMapping(value="/register", consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponse<?> register(@RequestBody @Valid CredentialReq req) {
+        String handle = req.getHandle();
+        String password = req.getPassword();
+        if (!validHandle(handle)) return ApiResponse.error(400, "handle 格式不正确");
+        if (password == null || password.length() < 6) return ApiResponse.error(400, "密码至少6位");
+        if (userService.handleExists(handle)) return ApiResponse.error(409, "handle 已存在");
+        String hash = encoder.encode(password);
+        userService.createUser(handle, hash);
+        return ApiResponse.ok(Map.of("ok", true));
     }
 
-    @PostMapping(value="/phone/login",
-            consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<?> phoneLogin(@RequestBody PhoneLoginReq req) {
-        String phone = req.getPhone();
-        String code  = req.getCode();
-        String cached = codeStore.get("login", phone);
-        if (cached == null || !cached.equals(code)) return ApiResponse.error(401, "验证码错误或已过期");
-        codeStore.remove("login", phone);
-
-        // 查库/落库
-        UserPO user = userService.upsertByPhone(phone);
-
+    @PostMapping(value="/login", consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponse<?> login(@RequestBody @Valid CredentialReq req) {
+        String handle = req.getHandle();
+        String password = req.getPassword();
+        if (!validHandle(handle)) return ApiResponse.error(400, "handle 格式不正确");
+        if (password == null || password.length() < 6) return ApiResponse.error(400, "密码至少6位");
+        UserPO user = userService.findByHandle(handle).orElse(null);
+        if (user == null || user.getPasswordHash() == null || !encoder.matches(password, user.getPasswordHash())) {
+            return ApiResponse.error(401, "用户名或密码错误");
+        }
         String token = JwtUtil.createToken(user.getId(), user.getNick(), 7L*24*3600*1000);
         return ApiResponse.ok(Map.of(
                 "token", token,
@@ -60,27 +55,21 @@ public class AuthController {
                         "id", user.getId(),
                         "nick", user.getNick(),
                         "avatar", user.getAvatar(),
+                        "username", user.getUsername(),
+                        "email", user.getEmail(),
                         "phone", user.getPhone()
                 )
         ));
     }
 
-    // 占位：如果后续接入微信 openid，可在这里换 openid -> upsert
-    @PostMapping(value="/wechat/login",
-            consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<?> wechatLogin(@RequestBody Map<String,String> body) {
-        String wechatCode = body.get("wechatCode");
-        if (wechatCode == null || wechatCode.isBlank()) return ApiResponse.error(400, "wechatCode 不能为空");
-        // TODO: 用 wechatCode 调用微信接口换 openid；这里暂用 code 的 hash 代替
-        String openid = "mock_openid_" + Math.abs(wechatCode.hashCode());
-        var u = userService.upsertByWechatOpenid(openid, "微信用户", null);
-        String token = JwtUtil.createToken(u.getId(), u.getNick(), 7L*24*3600*1000);
-        return ApiResponse.ok(Map.of(
-                "token", token,
-                "user", Map.of("id", u.getId(), "nick", u.getNick(), "avatar", u.getAvatar())
-        ));
+    private boolean validHandle(String handle) {
+        if (handle == null) return false;
+        return EMAIL.matcher(handle).matches() || PHONE.matcher(handle).matches() || USERNAME.matcher(handle).matches();
     }
 
-    @Data public static class PhoneCodeReq { private String phone; }
-    @Data public static class PhoneLoginReq { private String phone; private String code; }
+    @Data
+    public static class CredentialReq {
+        private String handle;
+        private String password;
+    }
 }

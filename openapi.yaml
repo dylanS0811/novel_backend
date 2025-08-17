@@ -2,10 +2,10 @@ openapi: 3.0.3
 info: { title: NovelGrain Backend API, version: 0.4.0 }
 servers: [ { url: /api } ]
 paths:
-  /auth/phone/login:
-    post: { summary: 手机登录, responses: { '200': { description: OK } } }
-  /auth/wechat/login:
-    post: { summary: 微信登录, responses: { '200': { description: OK } } }
+  /auth/register:
+    post: { summary: 注册, responses: { '200': { description: OK } } }
+  /auth/login:
+    post: { summary: 登录, responses: { '200': { description: OK } } }
   /me:
     get: { summary: 当前用户, responses: { '200': { description: OK } } }
     patch: { summary: 更新当前用户, responses: { '200': { description: OK } } }

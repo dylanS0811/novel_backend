@@ -27,10 +27,16 @@ public class UserPO {
     private Long id;
 
     @Column(length = 20, unique = true)
+    private String username;
+
+    @Column(length = 40, unique = true)
+    private String email;
+
+    @Column(length = 20, unique = true)
     private String phone;
 
-    @Column(name = "wechat_openid", length = 64, unique = true)
-    private String wechatOpenid;
+    @Column(name = "password_hash", length = 60)
+    private String passwordHash;
 
     @Column(length = 40, unique = true)
     private String nick;
