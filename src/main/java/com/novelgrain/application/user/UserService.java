@@ -51,10 +51,10 @@ public class UserService {
     }
 
     @Transactional
-    public UserPO updateProfile(Long id, String nick, String avatar) {
+    public UserPO updateProfile(Long id, String nick, String avatarUrl) {
         UserPO u = userJpa.findById(id).orElseThrow();
         if (nick != null && !nick.isBlank()) u.setNick(nick);
-        if (avatar != null && !avatar.isBlank()) u.setAvatar(avatar);
+        if (avatarUrl != null && !avatarUrl.isBlank()) u.setAvatar(avatarUrl);
         return userJpa.save(u);
     }
 
