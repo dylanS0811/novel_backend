@@ -35,7 +35,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserPO createUser(String handle, String passwordHash) {
+    public UserPO createUser(String handle, String nick, String passwordHash) {
         UserPO u = new UserPO();
         if (handle.contains("@")) {
             u.setEmail(handle);
@@ -45,7 +45,7 @@ public class UserService {
             u.setUsername(handle);
         }
         u.setPasswordHash(passwordHash);
-        u.setNick(handle);
+        u.setNick(nick);
         u.setAvatar("https://i.pravatar.cc/80?u=" + handle);
         return userJpa.save(u);
     }
