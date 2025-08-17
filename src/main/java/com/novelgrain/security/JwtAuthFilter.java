@@ -32,7 +32,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 authToken.setDetails(nick);
                 authToken.setAuthenticated(true);
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-            } catch (Exception ignore) { /* token 失效/非法，继续走匿名 */ }
+            } catch (Exception ignore) {
+                res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
         }
         chain.doFilter(req, res);
     }

@@ -41,6 +41,8 @@ public class MeController {
                 "id", u.getId(),
                 "nick", u.getNick(),
                 "avatar", u.getAvatar(),
+                "username", u.getUsername(),
+                "email", u.getEmail(),
                 "phone", u.getPhone()
         ));
     }
@@ -59,6 +61,8 @@ public class MeController {
                 "id", u.getId(),
                 "nick", u.getNick(),
                 "avatar", u.getAvatar(),
+                "username", u.getUsername(),
+                "email", u.getEmail(),
                 "phone", u.getPhone()
         ));
     }

@@ -1,34 +1,16 @@
 CREATE TABLE IF NOT EXISTS user
 (
-    id
-    BIGINT
-    PRIMARY
-    KEY
-    AUTO_INCREMENT,
-    phone
-    VARCHAR
-(
-    20
-) UNIQUE,
-    wechat_openid VARCHAR
-(
-    64
-) UNIQUE,
-    nick VARCHAR
-(
-    40
-) NOT NULL,
-    avatar VARCHAR
-(
-    255
-),
-    role VARCHAR
-(
-    20
-) DEFAULT 'USER',
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(20) UNIQUE,
+    email VARCHAR(40) UNIQUE,
+    phone VARCHAR(20) UNIQUE,
+    password_hash VARCHAR(60) NOT NULL,
+    nick VARCHAR(40) NOT NULL,
+    avatar VARCHAR(255),
+    role VARCHAR(20) DEFAULT 'USER',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS tag
 (
