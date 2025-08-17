@@ -52,11 +52,11 @@ public class MeController {
         Long uid = currentUserId(req);
         if (uid == null) return ApiResponse.err(401, "未登录");
         String nick = (String) (body.getOrDefault("nickname", body.get("nick")));
-        String avatar = (String) body.get("avatar");
+        String avatarUrl = (String) (body.getOrDefault("avatarUrl", body.get("avatar")));
         if (nick != null && userService.nickExistsForOther(nick, uid)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "昵称已被占用");
         }
-        UserPO u = userService.updateProfile(uid, nick, avatar);
+        UserPO u = userService.updateProfile(uid, nick, avatarUrl);
         Map<String, Object> userMap = new java.util.HashMap<>();
         userMap.put("id", u.getId());
         userMap.put("nick", u.getNick());

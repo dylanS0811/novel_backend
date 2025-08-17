@@ -21,9 +21,36 @@ paths:
     post: { summary: 登录, responses: { '200': { description: OK } } }
   /me:
     get: { summary: 当前用户, responses: { '200': { description: OK } } }
-    patch: { summary: 更新当前用户, responses: { '200': { description: OK } } }
+    patch:
+      summary: 更新当前用户
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nickname: { type: string }
+                nick: { type: string }
+                avatarUrl: { type: string }
+      responses: { '200': { description: OK } }
   /users/check-nickname:
     get: { summary: 校验昵称是否被占用, parameters: [ { in: query, name: nickname, required: true, schema: { type: string } } ], responses: { '200': { description: OK } } }
+  /uploads/avatar:
+    post:
+      summary: 上传头像
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [ file ]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses: { '200': { description: OK } }
   /books:
     get:
       summary: 列表
