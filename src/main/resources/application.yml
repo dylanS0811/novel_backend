@@ -31,3 +31,6 @@ springdoc:
 logging.level:
   org.springframework: INFO
   org.hibernate.SQL: INFO
+
+upload:
+  base-dir: "E:/Coding/git project/novel_backend/uploads"
