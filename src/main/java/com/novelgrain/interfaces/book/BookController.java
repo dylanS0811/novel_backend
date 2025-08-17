@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,12 +68,15 @@ public class BookController {
         return ApiResponse.ok(b);
     }
 
-    @PatchMapping("/{id}")
-    public ApiResponse<Book> update(@PathVariable("id") Long id, @RequestBody UpdateReq req) {
+    @PutMapping("/{id}")
+    public ApiResponse<Book> update(
+            @PathVariable("id") Long id,
+            @RequestParam("userId") Long userId,
+            @jakarta.validation.Valid @RequestBody UpdateReq req) {
         var patch = Book.builder()
                 .title(req.getTitle()).author(req.getAuthor()).orientation(req.getOrientation()).category(req.getCategory())
                 .blurb(req.getBlurb()).summary(req.getSummary()).tags(req.getTags()).build();
-        return ApiResponse.ok(use.update(id, patch));
+        return ApiResponse.ok(use.update(id, userId, patch));
     }
 
     @DeleteMapping("/{id}")
@@ -167,14 +170,19 @@ public class BookController {
 
     @Data
     public static class UpdateReq {
+        @jakarta.validation.constraints.Size(max = 120)
         private String title;
 
+        @jakarta.validation.constraints.Size(max = 80)
         private String author;
 
+        @jakarta.validation.constraints.Size(max = 20)
         private String orientation;
 
+        @jakarta.validation.constraints.Size(max = 20)
         private String category;
 
+        @jakarta.validation.constraints.Size(max = 200)
         private String blurb;
 
         private String summary;

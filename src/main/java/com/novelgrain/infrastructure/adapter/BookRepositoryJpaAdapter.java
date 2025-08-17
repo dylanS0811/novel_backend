@@ -279,10 +279,14 @@ public class BookRepositoryJpaAdapter implements BookRepository {
 
     private Book toDomain(BookPO po) {
         var tags = po.getTags().stream().map(TagPO::getName).sorted().toList();
+        var created = po.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toInstant();
+        var editableUntil = po.getCreatedAt().plusHours(24)
+                .atZone(java.time.ZoneId.systemDefault()).toInstant();
+
         return Book.builder()
                 .id(po.getId()).title(po.getTitle()).author(po.getAuthor()).orientation(po.getOrientation()).category(po.getCategory())
                 .blurb(po.getBlurb()).summary(po.getSummary()).coverUrl(po.getCoverUrl())
-                .createdAt(po.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
+                .createdAt(created).editableUntil(editableUntil)
                 .likes(po.getLikesCount()).bookmarks(po.getBookmarksCount()).comments(po.getCommentsCount())
                 .recommender(Book.Recommender.builder()
                         .id(po.getRecommender().getId())

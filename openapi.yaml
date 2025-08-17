@@ -75,10 +75,18 @@ paths:
         - { in: query, name: author, required: true, schema: { type: string } }
       responses: { '200': { description: OK } }
   /books/{id}:
-    get: { summary: 详情, parameters: [ { in: path, name: id, required: true, schema: { type: integer } } ], responses: { '200': { description: OK } } }
-    patch:
-      summary: 更新
+    get:
+      summary: 详情
       parameters: [ { in: path, name: id, required: true, schema: { type: integer } } ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Book' }
+    put:
+      summary: 更新
+      parameters: [ { in: path, name: id, required: true, schema: { type: integer } }, { in: query, name: userId, required: true, schema: { type: integer } } ]
       requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/BookUpdate' } } } }
       responses: { '200': { description: OK } }
     delete:
@@ -162,6 +170,19 @@ components:
         blurb: { type: string }
         summary: { type: string }
         tags: { type: array, items: { type: string } }
+    Book:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        author: { type: string }
+        orientation: { type: string }
+        category: { type: string }
+        blurb: { type: string }
+        summary: { type: string }
+        tags: { type: array, items: { type: string } }
+        createdAt: { type: string, format: date-time }
+        editableUntil: { type: string, format: date-time }
     CommentCreate:
       type: object
       required: [ text, userId ]
