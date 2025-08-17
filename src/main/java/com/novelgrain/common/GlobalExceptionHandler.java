@@ -10,8 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResponse<Void> handleValidation(MethodArgumentNotValidException e) {
-        var msg = e.getBindingResult().getFieldErrors().stream().findFirst().map(f -> f.getField() + ": " + f.getDefaultMessage()).orElse("参数错误");
-        return ApiResponse.err(40001, msg);
+        return ApiResponse.err(40001, "VALIDATION_ERROR");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

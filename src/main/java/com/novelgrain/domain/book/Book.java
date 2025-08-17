@@ -31,6 +31,8 @@ public class Book {
 
     private Instant createdAt;
 
+    private Instant editableUntil;
+
     private Integer likes;
 
     private Integer bookmarks;

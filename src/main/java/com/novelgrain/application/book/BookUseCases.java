@@ -7,6 +7,7 @@ import com.novelgrain.domain.book.Comment;
 import com.novelgrain.infrastructure.jpa.repo.BookBookmarkJpa;
 import com.novelgrain.infrastructure.jpa.repo.BookLikeJpa;
 import com.novelgrain.application.notification.NotificationService;
+import java.time.Instant;
 
 import java.util.List;
 
@@ -40,8 +41,36 @@ public class BookUseCases {
         return bookRepo.save(b, recommenderId);
     }
 
-    public Book update(Long id, Book patch) {
+    public Book update(Long id, Long userId, Book patch) {
+        var existing = bookRepo.findById(id);
+        if (!existing.getRecommender().getId().equals(userId)) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN, "BOOK_EDIT_NOT_OWNER");
+        }
+        if (Instant.now().isAfter(existing.getEditableUntil())) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN, "BOOK_EDIT_WINDOW_EXPIRED");
+        }
+        validatePatch(patch);
         return bookRepo.update(id, patch);
+    }
+
+    private void validatePatch(Book patch) {
+        if (patch.getTitle() != null && patch.getTitle().length() > 120)
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "VALIDATION_ERROR");
+        if (patch.getAuthor() != null && patch.getAuthor().length() > 80)
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "VALIDATION_ERROR");
+        if (patch.getOrientation() != null && patch.getOrientation().length() > 20)
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "VALIDATION_ERROR");
+        if (patch.getCategory() != null && patch.getCategory().length() > 20)
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "VALIDATION_ERROR");
+        if (patch.getBlurb() != null && patch.getBlurb().length() > 200)
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "VALIDATION_ERROR");
     }
 
     public void delete(Long id, Long requesterId) {
