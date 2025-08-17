@@ -29,12 +29,15 @@ public class AuthController {
     @PostMapping(value="/register", consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<?> register(@RequestBody @Valid CredentialReq req) {
         String handle = req.getHandle();
+        String nick = req.getNick();
         String password = req.getPassword();
         if (!validHandle(handle)) return ApiResponse.error(400, "用户名 / 邮箱 / 手机号 格式不正确");
         if (password == null || password.length() < 6) return ApiResponse.error(400, "密码至少6位");
+        if (nick == null || nick.isBlank()) return ApiResponse.error(400, "昵称不能为空");
         if (userService.handleExists(handle)) return ApiResponse.error(409, "用户名 / 邮箱 / 手机号 已存在");
+        if (userService.nickExists(nick)) return ApiResponse.error(409, "昵称已存在");
         String hash = encoder.encode(password);
-        userService.createUser(handle, hash);
+        userService.createUser(handle, nick, hash);
         return ApiResponse.ok(Map.of("ok", true));
     }
 
@@ -70,6 +73,7 @@ public class AuthController {
     @Data
     public static class CredentialReq {
         private String handle;
+        private String nick;
         private String password;
     }
 }

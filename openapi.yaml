@@ -3,7 +3,20 @@ info: { title: NovelGrain Backend API, version: 0.4.0 }
 servers: [ { url: /api } ]
 paths:
   /auth/register:
-    post: { summary: 注册, responses: { '200': { description: OK } } }
+    post:
+      summary: 注册
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ handle, nick, password ]
+              properties:
+                handle: { type: string }
+                nick: { type: string }
+                password: { type: string }
+      responses: { '200': { description: OK } }
   /auth/login:
     post: { summary: 登录, responses: { '200': { description: OK } } }
   /me:
