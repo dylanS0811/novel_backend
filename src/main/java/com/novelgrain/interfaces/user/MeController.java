@@ -37,14 +37,14 @@ public class MeController {
         if (uid == null) return ApiResponse.err(401, "未登录");
         UserPO u = userService.getById(uid).orElse(null);
         if (u == null) return ApiResponse.err(404, "用户不存在");
-        return ApiResponse.ok(Map.of(
-                "id", u.getId(),
-                "nick", u.getNick(),
-                "avatar", u.getAvatar(),
-                "username", u.getUsername(),
-                "email", u.getEmail(),
-                "phone", u.getPhone()
-        ));
+        Map<String, Object> userMap = new java.util.HashMap<>();
+        userMap.put("id", u.getId());
+        userMap.put("nick", u.getNick());
+        userMap.put("avatar", u.getAvatar());
+        userMap.put("username", u.getUsername());
+        userMap.put("email", u.getEmail());
+        userMap.put("phone", u.getPhone());
+        return ApiResponse.ok(userMap);
     }
 
     @PatchMapping("/me")
@@ -57,14 +57,14 @@ public class MeController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "昵称已被占用");
         }
         UserPO u = userService.updateProfile(uid, nick, avatar);
-        return ApiResponse.ok(Map.of(
-                "id", u.getId(),
-                "nick", u.getNick(),
-                "avatar", u.getAvatar(),
-                "username", u.getUsername(),
-                "email", u.getEmail(),
-                "phone", u.getPhone()
-        ));
+        Map<String, Object> userMap = new java.util.HashMap<>();
+        userMap.put("id", u.getId());
+        userMap.put("nick", u.getNick());
+        userMap.put("avatar", u.getAvatar());
+        userMap.put("username", u.getUsername());
+        userMap.put("email", u.getEmail());
+        userMap.put("phone", u.getPhone());
+        return ApiResponse.ok(userMap);
     }
 
     private Long currentUserId(HttpServletRequest req) {

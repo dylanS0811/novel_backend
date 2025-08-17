@@ -14,13 +14,15 @@ public class JwtUtil {
 
     public static String createToken(Long userId, String nick, long ttlMillis) {
         long now = System.currentTimeMillis();
-        return Jwts.builder()
+        var builder = Jwts.builder()
                 .setSubject(String.valueOf(userId))
-                .addClaims(Map.of("nick", nick))
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + ttlMillis))
-                .signWith(KEY, SignatureAlgorithm.HS256)
-                .compact();
+                .signWith(KEY, SignatureAlgorithm.HS256);
+        if (nick != null) {
+            builder.claim("nick", nick);
+        }
+        return builder.compact();
     }
 
     public static Jws<Claims> parse(String token) throws JwtException {

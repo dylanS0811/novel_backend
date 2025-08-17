@@ -49,16 +49,16 @@ public class AuthController {
             return ApiResponse.error(401, "用户名或密码错误");
         }
         String token = JwtUtil.createToken(user.getId(), user.getNick(), 7L*24*3600*1000);
+        Map<String, Object> userMap = new java.util.HashMap<>();
+        userMap.put("id", user.getId());
+        userMap.put("nick", user.getNick());
+        userMap.put("avatar", user.getAvatar());
+        userMap.put("username", user.getUsername());
+        userMap.put("email", user.getEmail());
+        userMap.put("phone", user.getPhone());
         return ApiResponse.ok(Map.of(
                 "token", token,
-                "user", Map.of(
-                        "id", user.getId(),
-                        "nick", user.getNick(),
-                        "avatar", user.getAvatar(),
-                        "username", user.getUsername(),
-                        "email", user.getEmail(),
-                        "phone", user.getPhone()
-                )
+                "user", userMap
         ));
     }
 
