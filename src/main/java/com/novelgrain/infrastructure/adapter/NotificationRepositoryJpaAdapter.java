@@ -73,6 +73,7 @@ public class NotificationRepositoryJpaAdapter implements NotificationRepository 
     }
 
     @Override
+    @Transactional
     public void save(String type, Long receiverId, Long actorId, Long bookId, Long commentId, String title, String content) {
         UserPO receiver = userJpa.findById(receiverId).orElseThrow();
         UserPO actor = userJpa.findById(actorId).orElseThrow();
