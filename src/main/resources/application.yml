@@ -3,7 +3,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/novelgrain?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8
     username: root
-    password: 123456
+    password: shn666666
   jpa:
     open-in-view: false
     hibernate.ddl-auto: validate
