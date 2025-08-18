@@ -82,8 +82,7 @@ public class BookRepositoryJpaAdapter implements BookRepository {
         };
 
         Sort sort = "hot".equalsIgnoreCase(tab)
-                ? JpaSort.unsafe(Sort.Direction.DESC, "(comments_count * 1 + bookmarks_count * 2 + likes_count * 3)")
-                        .and(Sort.by(Sort.Order.desc("createdAt")))
+                ? Sort.by(Sort.Order.desc("hot"), Sort.Order.desc("createdAt"))
                 : Sort.by(Sort.Order.desc("createdAt"));
 
         var p = bookJpa.findAll(spec, PageRequest.of(page - 1, size, sort));
