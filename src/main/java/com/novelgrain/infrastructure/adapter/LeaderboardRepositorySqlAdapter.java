@@ -54,7 +54,9 @@ public class LeaderboardRepositorySqlAdapter implements LeaderboardRepository {
         for (Object[] r : rows) {
             list.add(LeaderboardItem.builder()
                     .rank(rank++)
-                    .name((String) r[0])
+                    // expose user's nickname so the frontend can link to
+                    // their profile reliably
+                    .nick((String) r[0])
                     .avatar((String) r[1])
                     .score(((Number) r[2]).longValue())
                     .build());
