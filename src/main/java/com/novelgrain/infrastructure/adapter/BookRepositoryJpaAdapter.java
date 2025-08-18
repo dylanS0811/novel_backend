@@ -103,7 +103,7 @@ public class BookRepositoryJpaAdapter implements BookRepository {
         BookPO po = BookPO.builder()
                 .title(b.getTitle()).author(b.getAuthor()).orientation(b.getOrientation()).category(b.getCategory())
                 .blurb(b.getBlurb()).summary(b.getSummary())
-                .recommender(user).likesCount(0).bookmarksCount(0).commentsCount(0)
+                .recommender(user).likesCount(0).bookmarksCount(0).comments(0)
                 .createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build();
 
         if (b.getTags() != null) {
@@ -209,7 +209,7 @@ public class BookRepositoryJpaAdapter implements BookRepository {
                 .likesCount(0)
                 .repliesCount(0)
                 .createdAt(LocalDateTime.now()).build());
-        book.setCommentsCount(book.getCommentsCount() + 1);
+        book.setComments(book.getComments() + 1);
         bookJpa.save(book);
 
         return toDomainComment(c, userId);
@@ -287,7 +287,7 @@ public class BookRepositoryJpaAdapter implements BookRepository {
                 .id(po.getId()).title(po.getTitle()).author(po.getAuthor()).orientation(po.getOrientation()).category(po.getCategory())
                 .blurb(po.getBlurb()).summary(po.getSummary()).coverUrl(po.getCoverUrl())
                 .createdAt(created).editableUntil(editableUntil)
-                .likes(po.getLikesCount()).bookmarks(po.getBookmarksCount()).comments(po.getCommentsCount())
+                .likes(po.getLikesCount()).bookmarks(po.getBookmarksCount()).comments(po.getComments())
                 .recommender(Book.Recommender.builder()
                         .id(po.getRecommender().getId())
                         .name(po.getRecommender().getNick())
