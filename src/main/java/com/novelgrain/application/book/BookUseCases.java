@@ -4,6 +4,7 @@ import com.novelgrain.common.PageResponse;
 import com.novelgrain.domain.book.Book;
 import com.novelgrain.domain.book.BookRepository;
 import com.novelgrain.domain.book.Comment;
+import com.novelgrain.domain.book.BookCategories;
 import com.novelgrain.infrastructure.jpa.repo.BookBookmarkJpa;
 import com.novelgrain.infrastructure.jpa.repo.BookLikeJpa;
 import com.novelgrain.application.notification.NotificationService;
@@ -38,6 +39,7 @@ public class BookUseCases {
     }
 
     public Book create(String title, String author, String orientation, String category, String blurb, String summary, java.util.List<String> tags, Long recommenderId) {
+        validateCategory(category);
         Book b = Book.builder().title(title).author(author).orientation(orientation).category(category).blurb(blurb).summary(summary).tags(tags).build();
         return bookRepo.save(b, recommenderId);
     }
@@ -66,12 +68,22 @@ public class BookUseCases {
         if (patch.getOrientation() != null && patch.getOrientation().length() > 20)
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.BAD_REQUEST, "VALIDATION_ERROR");
-        if (patch.getCategory() != null && patch.getCategory().length() > 20)
-            throw new org.springframework.web.server.ResponseStatusException(
-                    org.springframework.http.HttpStatus.BAD_REQUEST, "VALIDATION_ERROR");
+        if (patch.getCategory() != null) {
+            if (patch.getCategory().length() > 20)
+                throw new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.BAD_REQUEST, "VALIDATION_ERROR");
+            validateCategory(patch.getCategory());
+        }
         if (patch.getBlurb() != null && patch.getBlurb().length() > 200)
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.BAD_REQUEST, "VALIDATION_ERROR");
+    }
+
+    private void validateCategory(String category) {
+        if (category == null || !BookCategories.ALL.contains(category)) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "INVALID_CATEGORY");
+        }
     }
 
     public void delete(Long id, Long requesterId) {
