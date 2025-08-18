@@ -38,10 +38,15 @@ public class BookController {
             @RequestParam(name = "orientation", required = false) String orientation,
             @RequestParam(name = "search", required = false) String search,
             @RequestParam(name = "tag", required = false) String tag,
+            @RequestParam(name = "recommenderId", required = false) Long recommenderId,
+            @RequestParam(name = "recommender", required = false) String recommender,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
-        return ApiResponse.ok(use.list(tab, category, orientation, search, tag, page, size));
+        if (recommenderId != null && recommenderId <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_RECOMMENDER_ID");
+        }
+        return ApiResponse.ok(use.list(tab, category, orientation, search, tag, recommenderId, recommender, page, size));
     }
 
     @GetMapping("/check")
