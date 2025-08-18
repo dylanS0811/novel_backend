@@ -56,7 +56,8 @@ public class BookRepositoryJpaAdapter implements BookRepository {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<Book> page(String tab, String category, String orientation, String search, String tag, int page, int size) {
+    public Page<Book> page(String tab, String category, String orientation, String search, String tag,
+                           Long recommenderId, String recommender, int page, int size) {
         Specification<BookPO> spec = (Root<BookPO> root, CriteriaQuery<?> q, CriteriaBuilder cb) -> {
             var ps = new java.util.ArrayList<Predicate>();
             if (category != null && !category.isBlank() && !"全部".equals(category)) {
@@ -77,6 +78,11 @@ public class BookRepositoryJpaAdapter implements BookRepository {
                 var join = root.join("tags");
                 ps.add(cb.equal(join.get("name"), tag));
                 q.distinct(true);
+            }
+            if (recommenderId != null) {
+                ps.add(cb.equal(root.get("recommender").get("id"), recommenderId));
+            } else if (recommender != null && !recommender.isBlank()) {
+                ps.add(cb.equal(root.get("recommender").get("nick"), recommender));
             }
             return cb.and(ps.toArray(new Predicate[0]));
         };
