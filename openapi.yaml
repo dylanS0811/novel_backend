@@ -56,7 +56,7 @@ paths:
       summary: 列表
       parameters:
         - { in: query, name: tab, schema: { type: string, enum: [ hot, new ] }, description: 热度=评论×1+收藏×2+点赞×3 }
-        - { in: query, name: category, schema: { type: string } }
+        - { in: query, name: category, schema: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑'] } }
         - { in: query, name: orientation, schema: { type: string } }
         - { in: query, name: search, schema: { type: string } }
         - { in: query, name: tag, schema: { type: string } }
@@ -157,7 +157,7 @@ components:
         title: { type: string }
         author: { type: string }
         orientation: { type: string }
-        category: { type: string }
+        category: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑'] }
         blurb: { type: string }
         summary: { type: string }
         tags: { type: array, items: { type: string } }
@@ -168,7 +168,7 @@ components:
         title: { type: string }
         author: { type: string }
         orientation: { type: string }
-        category: { type: string }
+        category: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑'] }
         blurb: { type: string }
         summary: { type: string }
         tags: { type: array, items: { type: string } }
@@ -179,7 +179,7 @@ components:
         title: { type: string }
         author: { type: string }
         orientation: { type: string }
-        category: { type: string }
+        category: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑'] }
         blurb: { type: string }
         summary: { type: string }
         tags: { type: array, items: { type: string } }
@@ -231,7 +231,7 @@ components:
         title: { type: string }
         author: { type: string }
         orientation: { type: string }
-        category: { type: string }
+        category: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑'] }
         rating: { type: integer, nullable: true }
         review: { type: string, nullable: true }
     SheetBookUpdate:
@@ -241,7 +241,7 @@ components:
         title: { type: string }
         author: { type: string }
         orientation: { type: string }
-        category: { type: string }
+        category: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑'] }
         rating: { type: integer, nullable: true }
         review: { type: string, nullable: true }
     SheetMove:

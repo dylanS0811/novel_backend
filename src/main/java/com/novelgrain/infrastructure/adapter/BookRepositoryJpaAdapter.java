@@ -67,12 +67,14 @@ public class BookRepositoryJpaAdapter implements BookRepository {
                 ps.add(cb.equal(root.get("orientation"), orientation));
             }
             if (search != null && !search.isBlank()) {
-                String like = "%" + search + "%";
-                ps.add(cb.or(
-                        cb.like(root.get("title"), like),
-                        cb.like(root.get("author"), like),
-                        cb.like(root.get("blurb"), like)
-                ));
+                var ors = new java.util.ArrayList<Predicate>();
+                for (String token : search.trim().toLowerCase().split("\\s+")) {
+                    String like = "%" + token + "%";
+                    ors.add(cb.like(cb.lower(root.get("title")), like));
+                    ors.add(cb.like(cb.lower(root.get("author")), like));
+                    ors.add(cb.like(cb.lower(root.get("blurb")), like));
+                }
+                ps.add(cb.or(ors.toArray(new Predicate[0])));
             }
             if (tag != null && !tag.isBlank()) {
                 var join = root.join("tags");
