@@ -4,6 +4,10 @@ package com.novelgrain.application.user;
 import com.novelgrain.infrastructure.jpa.entity.UserPO;
 import com.novelgrain.infrastructure.jpa.repo.UserJpa;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
@@ -54,7 +58,17 @@ public class UserService {
     public UserPO updateProfile(Long id, String nick, String avatarUrl) {
         UserPO u = userJpa.findById(id).orElseThrow();
         if (nick != null && !nick.isBlank()) u.setNick(nick);
-        if (avatarUrl != null && !avatarUrl.isBlank()) u.setAvatar(avatarUrl);
+        if (avatarUrl != null && !avatarUrl.isBlank()) {
+            String old = u.getAvatar();
+            if (old != null && !old.equals(avatarUrl) && old.startsWith("/uploads/")) {
+                Path oldPath = Paths.get("uploads", old.substring("/uploads/".length()));
+                try {
+                    Files.deleteIfExists(oldPath);
+                } catch (IOException ignore) {
+                }
+            }
+            u.setAvatar(avatarUrl);
+        }
         return userJpa.save(u);
     }
 
