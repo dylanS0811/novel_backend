@@ -67,7 +67,7 @@ public class BookPO {
     private Integer bookmarksCount;
 
     @Column(name = "comments_count")
-    private Integer commentsCount;
+    private Integer comments;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
