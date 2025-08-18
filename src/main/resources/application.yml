@@ -14,7 +14,7 @@ spring:
     # IMPORTANT: Flyway connects to the server, not to a specific DB
     url: jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8
     user: root
-    password: 123456
+    password: shn666666
     # Create the schema (MySQL “schema” == database)
     create-schemas: true
     schemas: novelgrain
