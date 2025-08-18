@@ -17,6 +17,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import org.hibernate.annotations.Formula;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -68,6 +69,9 @@ public class BookPO {
 
     @Column(name = "comments_count")
     private Integer comments;
+
+    @Formula("(comments_count * 1 + bookmarks_count * 2 + likes_count * 3)")
+    private Integer hot;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
