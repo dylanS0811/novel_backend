@@ -261,6 +261,8 @@ components:
         title: { type: string, nullable: true }
         content: { type: string, nullable: true }
         actorId: { type: integer, nullable: true }
+        actorNick: { type: string, nullable: true }
+        actorNickname: { type: string, nullable: true }
         actorName: { type: string, nullable: true }
         actorAvatar: { type: string, nullable: true }
         bookId: { type: integer, nullable: true }
