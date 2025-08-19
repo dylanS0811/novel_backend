@@ -2,6 +2,7 @@ package com.novelgrain.infrastructure.jpa.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 import lombok.*;
 
 @Entity
@@ -39,6 +40,17 @@ public class BookListBookPO {
     @Lob
     @Column(columnDefinition = "TEXT")
     private String review;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String summary;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "book_list_book_tags",
+            joinColumns = @JoinColumn(name = "book_list_book_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private Set<TagPO> tags;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
