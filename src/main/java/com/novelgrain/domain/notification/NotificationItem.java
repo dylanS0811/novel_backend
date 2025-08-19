@@ -26,6 +26,10 @@ public class NotificationItem {
 
     private Long actorId;
 
+    private String actorNick;
+
+    private String actorNickname;
+
     private String actorName;
 
     private String actorAvatar;

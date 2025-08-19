@@ -100,7 +100,7 @@ public class NotificationRepositoryJpaAdapter implements NotificationRepository 
                 .bookId(n.getBook() != null ? n.getBook().getId() : null)
                 .commentId(n.getComment() != null ? n.getComment().getId() : null)
                 .actorId(n.getActor() != null ? n.getActor().getId() : null)
-                .actorName(n.getActor() != null ? n.getActor().getNick() : null)
+                .actorNick(n.getActor() != null ? n.getActor().getNick() : null)
                 .actorAvatar(n.getActor() != null ? n.getActor().getAvatar() : null)
                 .read(n.getRead() != null && n.getRead())
                 .createdAt(n.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
