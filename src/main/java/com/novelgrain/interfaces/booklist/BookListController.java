@@ -56,6 +56,8 @@ public class BookListController {
                 .category(req.getCategory())
                 .rating(req.getRating())
                 .review(req.getReview())
+                .summary(req.getSummary())
+                .tags(req.getTags())
                 .build();
         return ApiResponse.ok(use.addBook(id, book));
     }
@@ -70,6 +72,8 @@ public class BookListController {
                 .category(req.getCategory())
                 .rating(req.getRating())
                 .review(req.getReview())
+                .summary(req.getSummary())
+                .tags(req.getTags())
                 .build();
         return ApiResponse.ok(use.updateBook(id, bookId, patch));
     }
@@ -111,6 +115,8 @@ public class BookListController {
         private String category;
         private Integer rating;
         private String review;
+        private String summary;
+        private java.util.List<String> tags;
     }
 
     @Data
@@ -122,6 +128,8 @@ public class BookListController {
         private String category;
         private Integer rating;
         private String review;
+        private String summary;
+        private java.util.List<String> tags;
     }
 
     @Data

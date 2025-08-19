@@ -223,27 +223,31 @@ components:
       properties:
         name: { type: string }
         intro: { type: string }
-    SheetBookCreate:
-      type: object
-      required: [ title ]
-      properties:
-        bookId: { type: integer, nullable: true }
-        title: { type: string }
-        author: { type: string }
-        orientation: { type: string }
-        category: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑'] }
-        rating: { type: integer, nullable: true }
-        review: { type: string, nullable: true }
-    SheetBookUpdate:
-      type: object
-      properties:
-        bookId: { type: integer, nullable: true }
-        title: { type: string }
-        author: { type: string }
-        orientation: { type: string }
-        category: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑'] }
-        rating: { type: integer, nullable: true }
-        review: { type: string, nullable: true }
+      SheetBookCreate:
+        type: object
+        required: [ title ]
+        properties:
+          bookId: { type: integer, nullable: true }
+          title: { type: string }
+          author: { type: string }
+          orientation: { type: string }
+          category: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑'] }
+          rating: { type: integer, nullable: true }
+          review: { type: string, nullable: true }
+          summary: { type: string, nullable: true }
+          tags: { type: array, items: { type: string } }
+      SheetBookUpdate:
+        type: object
+        properties:
+          bookId: { type: integer, nullable: true }
+          title: { type: string }
+          author: { type: string }
+          orientation: { type: string }
+          category: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑'] }
+          rating: { type: integer, nullable: true }
+          review: { type: string, nullable: true }
+          summary: { type: string, nullable: true }
+          tags: { type: array, items: { type: string } }
     SheetMove:
       type: object
       required: [ toListId ]

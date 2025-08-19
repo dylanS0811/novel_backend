@@ -1,6 +1,7 @@
 package com.novelgrain.domain.booklist;
 
 import java.time.Instant;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,6 +17,8 @@ public class BookListBook {
     private String category;
     private Integer rating;
     private String review;
+    private String summary;
+    private List<String> tags;
     private Instant createdAt;
     private Instant updatedAt;
 }

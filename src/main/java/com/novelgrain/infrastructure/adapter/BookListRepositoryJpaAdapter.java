@@ -7,9 +7,12 @@ import com.novelgrain.infrastructure.jpa.entity.BookListBookPO;
 import com.novelgrain.infrastructure.jpa.entity.BookListPO;
 import com.novelgrain.infrastructure.jpa.repo.BookListBookJpa;
 import com.novelgrain.infrastructure.jpa.repo.BookListJpa;
+import com.novelgrain.infrastructure.jpa.repo.TagJpa;
 import com.novelgrain.infrastructure.jpa.repo.UserJpa;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,6 +24,7 @@ public class BookListRepositoryJpaAdapter implements BookListRepository {
     private final BookListJpa listJpa;
     private final BookListBookJpa bookJpa;
     private final UserJpa userJpa;
+    private final TagJpa tagJpa;
 
     @Transactional(readOnly = true)
     @Override
@@ -81,6 +85,8 @@ public class BookListRepositoryJpaAdapter implements BookListRepository {
                 .category(book.getCategory())
                 .rating(book.getRating())
                 .review(book.getReview())
+                .summary(book.getSummary())
+                .tags(resolveTags(book.getTags()))
                 .build();
         po = bookJpa.save(po);
         return toDomainBook(po);
@@ -97,6 +103,8 @@ public class BookListRepositoryJpaAdapter implements BookListRepository {
         if (patch.getCategory() != null) po.setCategory(patch.getCategory());
         if (patch.getRating() != null) po.setRating(patch.getRating());
         if (patch.getReview() != null) po.setReview(patch.getReview());
+        if (patch.getSummary() != null) po.setSummary(patch.getSummary());
+        if (patch.getTags() != null) po.setTags(resolveTags(patch.getTags()));
         po = bookJpa.save(po);
         return toDomainBook(po);
     }
@@ -162,8 +170,21 @@ public class BookListRepositoryJpaAdapter implements BookListRepository {
                 .category(po.getCategory())
                 .rating(po.getRating())
                 .review(po.getReview())
+                .summary(po.getSummary())
+                .tags(po.getTags() == null ? java.util.List.of() : po.getTags().stream().map(t -> t.getName()).toList())
                 .createdAt(po.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant())
                 .updatedAt(po.getUpdatedAt().atZone(ZoneId.systemDefault()).toInstant())
                 .build();
+    }
+
+    private Set<com.novelgrain.infrastructure.jpa.entity.TagPO> resolveTags(List<String> tags) {
+        if (tags == null) return java.util.Collections.emptySet();
+        return tags.stream()
+                .map(name -> tagJpa.findByName(name)
+                        .orElseGet(() -> tagJpa.save(com.novelgrain.infrastructure.jpa.entity.TagPO.builder()
+                                .name(name)
+                                .createdAt(LocalDateTime.now())
+                                .build())))
+                .collect(java.util.stream.Collectors.toSet());
     }
 }
