@@ -94,7 +94,7 @@ public class BookUseCases {
     }
 
     private void validateOrientation(String orientation) {
-        if (orientation == null || !BookOrientations.ALL.contains(orientation)) {
+        if (!BookOrientations.isValid(orientation)) {
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.BAD_REQUEST, "INVALID_ORIENTATION");
         }
