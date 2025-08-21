@@ -5,6 +5,7 @@ import com.novelgrain.domain.book.Book;
 import com.novelgrain.domain.book.BookRepository;
 import com.novelgrain.domain.book.Comment;
 import com.novelgrain.domain.book.BookCategories;
+import com.novelgrain.domain.book.BookOrientations;
 import com.novelgrain.infrastructure.jpa.repo.BookBookmarkJpa;
 import com.novelgrain.infrastructure.jpa.repo.BookLikeJpa;
 import com.novelgrain.application.notification.NotificationService;
@@ -39,6 +40,7 @@ public class BookUseCases {
     }
 
     public Book create(String title, String author, String orientation, String category, String blurb, String summary, java.util.List<String> tags, Long recommenderId) {
+        validateOrientation(orientation);
         validateCategory(category);
         Book b = Book.builder().title(title).author(author).orientation(orientation).category(category).blurb(blurb).summary(summary).tags(tags).build();
         return bookRepo.save(b, recommenderId);
@@ -65,9 +67,12 @@ public class BookUseCases {
         if (patch.getAuthor() != null && patch.getAuthor().length() > 80)
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.BAD_REQUEST, "VALIDATION_ERROR");
-        if (patch.getOrientation() != null && patch.getOrientation().length() > 20)
-            throw new org.springframework.web.server.ResponseStatusException(
-                    org.springframework.http.HttpStatus.BAD_REQUEST, "VALIDATION_ERROR");
+        if (patch.getOrientation() != null) {
+            if (patch.getOrientation().length() > 20)
+                throw new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.BAD_REQUEST, "VALIDATION_ERROR");
+            validateOrientation(patch.getOrientation());
+        }
         if (patch.getCategory() != null) {
             if (patch.getCategory().length() > 20)
                 throw new org.springframework.web.server.ResponseStatusException(
@@ -83,6 +88,13 @@ public class BookUseCases {
         if (category == null || !BookCategories.ALL.contains(category)) {
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.BAD_REQUEST, "INVALID_CATEGORY");
+        }
+    }
+
+    private void validateOrientation(String orientation) {
+        if (orientation == null || !BookOrientations.ALL.contains(orientation)) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "INVALID_ORIENTATION");
         }
     }
 

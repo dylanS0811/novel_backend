@@ -32,8 +32,8 @@ class BookControllerTest {
     void listByRecommenderIdReturnsOnlyTheirBooks() throws Exception {
         var u1 = userJpa.save(UserPO.builder().username("u1").nick("n1").passwordHash("p").build());
         var u2 = userJpa.save(UserPO.builder().username("u2").nick("n2").passwordHash("p").build());
-        bookRepo.save(Book.builder().title("t1").orientation("o").category("爱情").build(), u1.getId());
-        bookRepo.save(Book.builder().title("t2").orientation("o").category("爱情").build(), u2.getId());
+        bookRepo.save(Book.builder().title("t1").orientation("女频").category("爱情").build(), u1.getId());
+        bookRepo.save(Book.builder().title("t2").orientation("女频").category("爱情").build(), u2.getId());
 
         mvc.perform(get("/api/books").param("recommenderId", u1.getId().toString())
                 .param("page", "1").param("size", "10"))
@@ -56,8 +56,8 @@ class BookControllerTest {
     @Test
     void fuzzySearchMatchesPartialKeywords() throws Exception {
         var u = userJpa.save(UserPO.builder().username("u3").nick("n3").passwordHash("p").build());
-        bookRepo.save(Book.builder().title("Alpha").orientation("o").category("爱情").blurb("desc").build(), u.getId());
-        bookRepo.save(Book.builder().title("Bravo").orientation("o").category("爱情").blurb("desc").build(), u.getId());
+        bookRepo.save(Book.builder().title("Alpha").orientation("女频").category("爱情").blurb("desc").build(), u.getId());
+        bookRepo.save(Book.builder().title("Bravo").orientation("女频").category("爱情").blurb("desc").build(), u.getId());
 
         mvc.perform(get("/api/books").param("search", "alp").param("page", "1").param("size", "10"))
                 .andExpect(status().isOk())
@@ -76,8 +76,31 @@ class BookControllerTest {
         mvc.perform(post("/api/books")
                         .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                         .content("""
-                                {"title":"t","orientation":"o","category":"invalid","recommenderId":%d}
+                                {"title":"t","orientation":"女频","category":"invalid","recommenderId":%d}
                                 """.formatted(u.getId())))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createWithInvalidOrientationReturnsBadRequest() throws Exception {
+        var u = userJpa.save(UserPO.builder().username("u5").nick("n5").passwordHash("p").build());
+        mvc.perform(post("/api/books")
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"title":"t","orientation":"invalid","category":"爱情","recommenderId":%d}
+                                """.formatted(u.getId())))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createWithNewCategorySucceeds() throws Exception {
+        var u = userJpa.save(UserPO.builder().username("u6").nick("n6").passwordHash("p").build());
+        mvc.perform(post("/api/books")
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"title":"t","orientation":"女频","category":"年代","recommenderId":%d}
+                                """.formatted(u.getId())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.category").value("年代"));
     }
 }
