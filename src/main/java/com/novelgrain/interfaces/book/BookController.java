@@ -37,7 +37,8 @@ public class BookController {
             @RequestParam(name = "category", required = false) String category,
             @RequestParam(name = "orientation", required = false) String orientation,
             @RequestParam(name = "search", required = false) String search,
-            @RequestParam(name = "tag", required = false) String tag,
+            @RequestParam(name = "includeTags", required = false) String includeTags,
+            @RequestParam(name = "excludeTags", required = false) String excludeTags,
             @RequestParam(name = "recommenderId", required = false) Long recommenderId,
             @RequestParam(name = "recommender", required = false) String recommender,
             @RequestParam(name = "page", defaultValue = "1") int page,
@@ -46,7 +47,11 @@ public class BookController {
         if (recommenderId != null && recommenderId <= 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_RECOMMENDER_ID");
         }
-        return ApiResponse.ok(use.list(tab, category, orientation, search, tag, recommenderId, recommender, page, size));
+        var include = includeTags == null || includeTags.isBlank() ? java.util.List.<String>of()
+                : java.util.Arrays.stream(includeTags.split(",")).filter(s -> !s.isBlank()).map(String::trim).toList();
+        var exclude = excludeTags == null || excludeTags.isBlank() ? java.util.List.<String>of()
+                : java.util.Arrays.stream(excludeTags.split(",")).filter(s -> !s.isBlank()).map(String::trim).toList();
+        return ApiResponse.ok(use.list(tab, category, orientation, search, include, exclude, recommenderId, recommender, page, size));
     }
 
     @GetMapping("/check")

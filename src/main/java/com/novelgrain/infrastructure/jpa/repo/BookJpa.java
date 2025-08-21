@@ -18,4 +18,6 @@ public interface BookJpa extends JpaRepository<BookPO, Long>, JpaSpecificationEx
     Optional<BookPO> findByIdWithTags(@Param("id") Long id);
 
     boolean existsByTitleAndAuthor(String title, String author);
+
+    long countByTags_Id(Long tagId);
 }

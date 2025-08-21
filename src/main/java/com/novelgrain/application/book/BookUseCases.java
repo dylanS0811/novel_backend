@@ -29,9 +29,11 @@ public class BookUseCases {
 
     private final NotificationService notificationService;
 
-    public PageResponse<Book> list(String tab, String category, String orientation, String search, String tag,
+    public PageResponse<Book> list(String tab, String category, String orientation, String search,
+                                   java.util.List<String> includeTags, java.util.List<String> excludeTags,
                                    Long recommenderId, String recommender, int page, int size) {
-        Page<Book> p = bookRepo.page(tab, category, orientation, search, tag, recommenderId, recommender, page, size);
+        Page<Book> p = bookRepo.page(tab, category, orientation, search, includeTags, excludeTags,
+                recommenderId, recommender, page, size);
         return new PageResponse<>(p.getContent(), page, size, p.getTotalElements());
     }
 

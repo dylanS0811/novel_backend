@@ -56,7 +56,8 @@ public class BookRepositoryJpaAdapter implements BookRepository {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<Book> page(String tab, String category, String orientation, String search, String tag,
+    public Page<Book> page(String tab, String category, String orientation, String search,
+                           java.util.List<String> includeTags, java.util.List<String> excludeTags,
                            Long recommenderId, String recommender, int page, int size) {
         Specification<BookPO> spec = (Root<BookPO> root, CriteriaQuery<?> q, CriteriaBuilder cb) -> {
             var ps = new java.util.ArrayList<Predicate>();
@@ -76,10 +77,27 @@ public class BookRepositoryJpaAdapter implements BookRepository {
                 }
                 ps.add(cb.or(ors.toArray(new Predicate[0])));
             }
-            if (tag != null && !tag.isBlank()) {
-                var join = root.join("tags");
-                ps.add(cb.equal(join.get("name"), tag));
-                q.distinct(true);
+            if (includeTags != null) {
+                for (String t : includeTags) {
+                    if (t != null && !t.isBlank()) {
+                        var sub = q.subquery(Long.class);
+                        var b = sub.from(BookPO.class);
+                        var join = b.join("tags");
+                        sub.select(b.get("id")).where(cb.and(cb.equal(b.get("id"), root.get("id")), cb.equal(join.get("name"), t)));
+                        ps.add(cb.exists(sub));
+                    }
+                }
+            }
+            if (excludeTags != null) {
+                for (String t : excludeTags) {
+                    if (t != null && !t.isBlank()) {
+                        var sub = q.subquery(Long.class);
+                        var b = sub.from(BookPO.class);
+                        var join = b.join("tags");
+                        sub.select(b.get("id")).where(cb.and(cb.equal(b.get("id"), root.get("id")), cb.equal(join.get("name"), t)));
+                        ps.add(cb.not(cb.exists(sub)));
+                    }
+                }
             }
             if (recommenderId != null) {
                 ps.add(cb.equal(root.get("recommender").get("id"), recommenderId));

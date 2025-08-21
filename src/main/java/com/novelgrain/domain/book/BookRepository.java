@@ -3,7 +3,8 @@ package com.novelgrain.domain.book;
 import org.springframework.data.domain.Page;
 
 public interface BookRepository {
-    Page<Book> page(String tab, String category, String orientation, String search, String tag,
+    Page<Book> page(String tab, String category, String orientation, String search,
+                    java.util.List<String> includeTags, java.util.List<String> excludeTags,
                     Long recommenderId, String recommender, int page, int size);
 
     Book findById(Long id);
