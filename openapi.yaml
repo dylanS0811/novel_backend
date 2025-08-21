@@ -57,7 +57,7 @@ paths:
       parameters:
         - { in: query, name: tab, schema: { type: string, enum: [ hot, new ] }, description: 热度=评论×1+收藏×2+点赞×3 }
         - { in: query, name: category, schema: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑','年代'] } }
-        - { in: query, name: orientation, schema: { type: string, enum: ['BG','BL','GL','无CP','男频','女频'] } }
+        - { in: query, name: orientation, schema: { type: string }, description: "方位，如 BL、BL主受 等" }
         - { in: query, name: search, schema: { type: string } }
         - { in: query, name: includeTags, schema: { type: string }, description: 以逗号分隔的包含标签 }
         - { in: query, name: excludeTags, schema: { type: string }, description: 以逗号分隔的排除标签 }
@@ -165,7 +165,7 @@ components:
       properties:
         title: { type: string }
         author: { type: string }
-        orientation: { type: string, enum: ['BG','BL','GL','无CP','男频','女频'] }
+        orientation: { type: string, description: "方位，如 BL、BL主受 等" }
         category: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑','年代'] }
         blurb: { type: string }
         summary: { type: string }
@@ -176,7 +176,7 @@ components:
       properties:
         title: { type: string }
         author: { type: string }
-        orientation: { type: string, enum: ['BG','BL','GL','无CP','男频','女频'] }
+        orientation: { type: string, description: "方位，如 BL、BL主受 等" }
         category: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑','年代'] }
         blurb: { type: string }
         summary: { type: string }
@@ -187,7 +187,7 @@ components:
         id: { type: integer }
         title: { type: string }
         author: { type: string }
-        orientation: { type: string, enum: ['BG','BL','GL','无CP','男频','女频'] }
+        orientation: { type: string, description: "方位，如 BL、BL主受 等" }
         category: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑','年代'] }
         blurb: { type: string }
         summary: { type: string }
@@ -245,7 +245,7 @@ components:
           bookId: { type: integer, nullable: true }
           title: { type: string }
           author: { type: string }
-          orientation: { type: string, enum: ['BG','BL','GL','无CP','男频','女频'] }
+          orientation: { type: string, description: "方位，如 BL、BL主受 等" }
           category: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑','年代'] }
           rating: { type: integer, nullable: true }
           review: { type: string, nullable: true }
@@ -257,7 +257,7 @@ components:
           bookId: { type: integer, nullable: true }
           title: { type: string }
           author: { type: string }
-          orientation: { type: string, enum: ['BG','BL','GL','无CP','男频','女频'] }
+          orientation: { type: string, description: "方位，如 BL、BL主受 等" }
           category: { type: string, enum: ['爱情','剧情','都市','历史','奇幻','仙侠','同人','海棠','酸涩','职场','无限流','快穿','游戏','科幻','童话','惊悚','悬疑','年代'] }
           rating: { type: integer, nullable: true }
           review: { type: string, nullable: true }
