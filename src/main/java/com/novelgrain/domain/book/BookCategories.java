@@ -25,6 +25,7 @@ public final class BookCategories {
             "科幻",
             "童话",
             "惊悚",
-            "悬疑"
+            "悬疑",
+            "年代"
     );
 }
