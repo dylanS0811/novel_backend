@@ -5,27 +5,25 @@ import java.util.Set;
 /**
  * Allowed book orientations used across the application.
  *
- * <p>The original implementation only accepted a fixed set of exact
- * values. However, the frontend may send more specific orientations such
- * as {@code "BL主受"}.  To keep compatibility while still preventing
- * completely invalid values, we now validate based on well known
- * prefixes. Any orientation that starts with one of the prefixes is
- * considered valid.</p>
+ * <p>The values mirror the constants defined on the frontend to ensure
+ * that uploads and updates accept every orientation option presented to
+ * users.</p>
  */
 public final class BookOrientations {
     private BookOrientations() {}
 
-    private static final Set<String> PREFIXES = Set.of(
-            "BG",
-            "BL",
-            "GL",
-            "无CP",
+    public static final Set<String> ALL = Set.of(
+            "BL主受",
+            "BL主攻",
+            "言情",
+            "男主无CP",
+            "女主无CP",
             "男频",
-            "女频"
+            "女频",
+            "其他"
     );
 
     public static boolean isValid(String value) {
-        if (value == null) return false;
-        return PREFIXES.stream().anyMatch(value::startsWith);
+        return value != null && ALL.contains(value);
     }
 }
