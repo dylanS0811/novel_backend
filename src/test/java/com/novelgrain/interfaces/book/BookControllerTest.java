@@ -5,11 +5,16 @@ import com.novelgrain.domain.book.BookRepository;
 import com.novelgrain.infrastructure.jpa.entity.UserPO;
 import com.novelgrain.infrastructure.jpa.repo.UserJpa;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -76,7 +81,7 @@ class BookControllerTest {
         mvc.perform(post("/api/books")
                         .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                         .content("""
-                                {"title":"t","orientation":"女频","category":"invalid","recommenderId":%d}
+                                {"title":"t","orientation":"女频","category":"invalid","recommenderId":%d}",
                                 """.formatted(u.getId())))
                 .andExpect(status().isBadRequest());
     }
@@ -87,20 +92,43 @@ class BookControllerTest {
         mvc.perform(post("/api/books")
                         .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                         .content("""
-                                {"title":"t","orientation":"invalid","category":"爱情","recommenderId":%d}
+                                {"title":"t","orientation":"invalid","category":"爱情","recommenderId":%d}",
                                 """.formatted(u.getId())))
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void createWithNewCategorySucceeds() throws Exception {
-        var u = userJpa.save(UserPO.builder().username("u6").nick("n6").passwordHash("p").build());
+    private static Stream<String> orientations() {
+        return com.novelgrain.domain.book.BookOrientations.ALL.stream();
+    }
+
+    private static Stream<String> categories() {
+        return com.novelgrain.domain.book.BookCategories.ALL.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("orientations")
+    void createWithEachOrientationSucceeds(String orientation) throws Exception {
+        var u = userJpa.save(UserPO.builder().username(UUID.randomUUID().toString()).nick("n").passwordHash("p").build());
         mvc.perform(post("/api/books")
                         .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                         .content("""
-                                {"title":"t","orientation":"女频","category":"年代","recommenderId":%d}
-                                """.formatted(u.getId())))
+                                {"title":"t","orientation":"%s","category":"奇幻","recommenderId":%d}",
+                                """.formatted(orientation, u.getId())))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.category").value("年代"));
+                .andExpect(jsonPath("$.data.orientation").value(orientation));
+    }
+
+    @ParameterizedTest
+    @MethodSource("categories")
+    void createWithEachCategorySucceeds(String category) throws Exception {
+        var u = userJpa.save(UserPO.builder().username(UUID.randomUUID().toString()).nick("n").passwordHash("p").build());
+        mvc.perform(post("/api/books")
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"title":"t","orientation":"女频","category":"%s","recommenderId":%d}",
+                                """.formatted(category, u.getId())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.category").value(category));
     }
 }
+
