@@ -1,9 +1,10 @@
-// src/main/java/com/novelgrain/common/ApiResponse.java
 package com.novelgrain.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.novelgrain.common.Messages;
 
 @Data
 @NoArgsConstructor
@@ -16,14 +17,13 @@ public class ApiResponse<T> {
     private T data;
 
     public static <T> ApiResponse<T> ok(T data) {
-        return new ApiResponse<>(0, "OK", data);
+        return new ApiResponse<>(0, Messages.tr("ok"), data);
     }
 
     public static <T> ApiResponse<T> err(int c, String m) {
-        return new ApiResponse<>(c, m, null);
+        return new ApiResponse<>(c, Messages.tr(m), null);
     }
 
-    // 新增：别名
     public static <T> ApiResponse<T> error(int c, String m) {
         return err(c, m);
     }
