@@ -30,6 +30,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ApiResponse<Void> handleAny(Exception e) {
-        return ApiResponse.err(50000, e.getMessage());
+        return ApiResponse.err(50000, "internal.error");
     }
 }
